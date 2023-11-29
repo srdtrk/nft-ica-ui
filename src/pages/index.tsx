@@ -1,5 +1,6 @@
 import { useCounterStore } from "@/context/CounterContextProvider";
 import React, { useEffect, useState } from "react";
+import CounterContextProvider from "@/context/CounterContextProvider";
 
 type Props = {};
 
@@ -15,6 +16,7 @@ function Home({}: Props) {
     setContractCounter(inputCount);
   }
   return (
+    <CounterContextProvider>
     <div className='flex justify-center pt-20'>
       <div className='bg-white rounded-lg p-5 text-center'>
         <div>
@@ -48,6 +50,7 @@ function Home({}: Props) {
         </div>
       </div>
     </div>
+    </CounterContextProvider>
   );
 }
 
