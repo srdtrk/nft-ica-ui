@@ -1,31 +1,34 @@
-import { useCounterStore } from "@/context/CounterContextProvider";
-import React, { useEffect, useState } from "react";
-import CounterContextProvider from "@/context/CounterContextProvider";
+import { useCounterStore } from '@/context/CounterContextProvider'
+import React, { useEffect, useState } from 'react'
 
-type Props = {};
+interface Props {}
 
-function Home({}: Props) {
-  const [inputCount, setInputCount] = useState("0");
+function Home ({}: Props): JSX.Element {
+  const [inputCount, setInputCount] = useState('0')
   const { count, isLoading, incrementCount, setContractCounter } =
-    useCounterStore();
+    useCounterStore()
   useEffect(() => {
-    setInputCount(count.toString());
-  }, [count]);
+    setInputCount(count.toString())
+  }, [count])
 
-  function handleSetCount() {
-    setContractCounter(inputCount);
+  function handleSetCount (): void {
+    void setContractCounter(inputCount)
   }
+
+  function handleIncrementCount (): void {
+    void incrementCount()
+  }
+
   return (
-    <CounterContextProvider>
     <div className='flex justify-center pt-20'>
       <div className='bg-white rounded-lg p-5 text-center'>
         <div>
           <h1>The Count is</h1>
-          <p>{isLoading ? "loading..." : count}</p>
+          <p>{isLoading ? 'loading...' : count}</p>
         </div>
         <div>
           <button
-            onClick={incrementCount}
+            onClick={handleIncrementCount}
             className='btn w-full'
             disabled={isLoading}
           >
@@ -36,7 +39,7 @@ function Home({}: Props) {
               type='number'
               value={inputCount}
               step={1}
-              onChange={(e) => setInputCount(e.target.value)}
+              onChange={(e) => { setInputCount(e.target.value) }}
               className='border rounded-lg p-2'
             />
             <button
@@ -50,8 +53,7 @@ function Home({}: Props) {
         </div>
       </div>
     </div>
-    </CounterContextProvider>
-  );
+  )
 }
 
-export default Home;
+export default Home

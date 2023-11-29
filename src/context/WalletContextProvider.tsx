@@ -1,33 +1,33 @@
-import { getAddresses } from "@/services/wallet";
-import { getInjectiveAddress } from "@injectivelabs/sdk-ts";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { getAddresses } from '@/services/wallet'
+import { getInjectiveAddress } from '@injectivelabs/sdk-ts'
+import React, { createContext, useContext, useState } from 'react'
 
-type StoreState = {
-  injectiveAddress: string;
-  ethereumAddress: string;
-  connectWallet: () => void;
-};
+interface StoreState {
+  injectiveAddress: string
+  ethereumAddress: string
+  connectWallet: () => Promise<void>
+}
 
 const WalletContext = createContext<StoreState>({
-  ethereumAddress: "",
-  injectiveAddress: "",
-  connectWallet: () => {},
-});
+  ethereumAddress: '',
+  injectiveAddress: '',
+  connectWallet: async () => {}
+})
 
-export const useWalletStore = () => useContext(WalletContext);
+export const useWalletStore = (): StoreState => useContext(WalletContext)
 
-type Props = {
-  children?: React.ReactNode;
-};
+interface Props {
+  children?: React.ReactNode
+}
 
-const WalletContextProvider = (props: Props) => {
-  const [ethereumAddress, setEthereumAddress] = useState("");
-  const [injectiveAddress, setInjectiveAddress] = useState("");
+const WalletContextProvider = (props: Props): JSX.Element => {
+  const [ethereumAddress, setEthereumAddress] = useState('')
+  const [injectiveAddress, setInjectiveAddress] = useState('')
 
-  async function connectWallet() {
-    const [address] = await getAddresses();
-    setEthereumAddress(address);
-    setInjectiveAddress(getInjectiveAddress(address));
+  async function connectWallet (): Promise<void> {
+    const [address] = await getAddresses()
+    setEthereumAddress(address)
+    setInjectiveAddress(getInjectiveAddress(address))
   }
 
   return (
@@ -35,12 +35,12 @@ const WalletContextProvider = (props: Props) => {
       value={{
         ethereumAddress,
         injectiveAddress,
-        connectWallet,
+        connectWallet
       }}
     >
       {props.children}
     </WalletContext.Provider>
-  );
-};
+  )
+}
 
-export default WalletContextProvider;
+export default WalletContextProvider
