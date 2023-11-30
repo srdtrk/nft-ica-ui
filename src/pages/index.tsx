@@ -1,9 +1,15 @@
-import { useCounterStore } from '@/context/CounterContextProvider'
+import CounterContextProvider, { useCounterStore } from '@/context/CounterContextProvider'
 import React, { useEffect, useState } from 'react'
 
-interface Props {}
+function HomePage (): JSX.Element {
+  return (
+    <CounterContextProvider>
+      <Home />
+    </CounterContextProvider>
+  )
+}
 
-function Home ({}: Props): JSX.Element {
+function Home (): JSX.Element {
   const [inputCount, setInputCount] = useState('0')
   const { count, isLoading, incrementCount, setContractCounter } =
     useCounterStore()
@@ -56,4 +62,4 @@ function Home ({}: Props): JSX.Element {
   )
 }
 
-export default Home
+export default HomePage
