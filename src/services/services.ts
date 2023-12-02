@@ -10,5 +10,5 @@ export const chainGrpcWasmApi = new ChainGrpcWasmApi(ENDPOINTS.grpc)
 
 export const msgBroadcastClient = new MsgBroadcaster({
   walletStrategy,
-  network: NETWORK
+  network: NETWORK,
 })

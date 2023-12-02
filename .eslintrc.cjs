@@ -10,31 +10,32 @@ module.exports = {
     'plugin:react/recommended',
     'plugin:import/recommended',
     'plugin:jsx-a11y/recommended',
-    'plugin:@typescript-eslint/recommended'
+    'plugin:@typescript-eslint/recommended',
     // This disables the formatting rules in ESLint that Prettier is going to be responsible for handling.
     // Make sure it's always the last config, so it gets the chance to override other configs.
-    // "plugin:prettier/recommended",
+    'plugin:prettier/recommended',
   ],
   settings: {
     react: {
       // Tells eslint-plugin-react to automatically detect the version of React to use.
-      version: 'detect'
+      version: 'detect',
     },
     // Tells eslint how to resolve imports
     'import/resolver': {
       alias: {
         map: [['@', './src/']],
-        extensions: ['.js', '.jsx', '.ts', '.tsx']
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
       },
       node: {
-        project: './tsconfig.json',
+        // project: './tsconfig.json',
         paths: ['src', '.eslintrc.cjs'],
-        extensions: ['.js', '.jsx', '.ts', '.tsx']
-      }
-    }
+        extensions: ['.ts', '.tsx'],
+      },
+    },
   },
   rules: {
-    'react/react-in-jsx-scope': 'off'
+    'react/react-in-jsx-scope': 'off',
     // Add your own rules here to override ones from the extended configs.
-  }
+  },
+  ignorePatterns: ['node_modules', 'dist', 'build', '**config.js', 'next-env.d.ts'],
 }

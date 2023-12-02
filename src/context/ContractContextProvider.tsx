@@ -7,7 +7,7 @@ import {
   type TxResponse,
   // fromBase64,
   // getInjectiveAddress,
-  toBase64
+  toBase64,
 } from '@injectivelabs/sdk-ts'
 import React, { createContext, useContext, useState } from 'react'
 import { useWalletStore } from './WalletContextProvider'
@@ -26,8 +26,8 @@ interface StoreState {
   instantiateContract: (msg: JSON) => Promise<TxResponse | undefined>
   executeContract: (msg: JSON) => Promise<TxResponse | undefined>
   /**
-    * @returns base64 encoded bytes encoded by the contract
-    */
+   * @returns base64 encoded bytes encoded by the contract
+   */
   queryContract: (msg: JSON) => Promise<string | undefined>
 }
 
@@ -50,7 +50,7 @@ const ContractContext = createContext<StoreState>({
   },
   queryContract: async (_msg) => {
     return ''
-  }
+  },
 })
 
 export const useContextStore = (): StoreState => useContext(ContractContext)
@@ -67,13 +67,10 @@ const ContractContextProvider = (props: Props): JSX.Element => {
   const isLoading = status === Status.Loading
   const { injectiveAddress } = useWalletStore()
 
-  async function queryContract (msg: JSON): Promise<string | undefined> {
+  async function queryContract(msg: JSON): Promise<string | undefined> {
     setStatus(Status.Loading)
     try {
-      const response = (await chainGrpcWasmApi.fetchSmartContractState(
-        contractAddress,
-        toBase64(msg)
-      ))
+      const response = await chainGrpcWasmApi.fetchSmartContractState(contractAddress, toBase64(msg))
 
       return toBase64(response.data)
     } catch (e) {
@@ -83,7 +80,7 @@ const ContractContextProvider = (props: Props): JSX.Element => {
     }
   }
 
-  async function uploadCode (): Promise<TxResponse | undefined> {
+  async function uploadCode(): Promise<TxResponse | undefined> {
     if (injectiveAddress === '') {
       alert('No Wallet Connected')
       return
@@ -99,12 +96,12 @@ const ContractContextProvider = (props: Props): JSX.Element => {
     try {
       const execMsg = MsgStoreCode.fromJSON({
         sender: injectiveAddress,
-        wasmBytes: await readFileAsUint8Array(wasmFile)
+        wasmBytes: await readFileAsUint8Array(wasmFile),
       })
 
       const resp = await msgBroadcastClient.broadcast({
         msgs: execMsg,
-        injectiveAddress
+        injectiveAddress,
       })
 
       setWasmFile(null)
@@ -117,7 +114,7 @@ const ContractContextProvider = (props: Props): JSX.Element => {
     }
   }
 
-  async function executeContract (msg: JSON): Promise<TxResponse | undefined> {
+  async function executeContract(msg: JSON): Promise<TxResponse | undefined> {
     if (injectiveAddress === '') {
       alert('No Wallet Connected')
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -130,12 +127,12 @@ const ContractContextProvider = (props: Props): JSX.Element => {
       const execMsg = MsgExecuteContractCompat.fromJSON({
         contractAddress,
         sender: injectiveAddress,
-        msg
+        msg,
       })
 
       const resp = await msgBroadcastClient.broadcast({
         msgs: execMsg,
-        injectiveAddress
+        injectiveAddress,
       })
 
       return resp
@@ -146,7 +143,7 @@ const ContractContextProvider = (props: Props): JSX.Element => {
     }
   }
 
-  async function instantiateContract (msg: JSON): Promise<TxResponse | undefined> {
+  async function instantiateContract(msg: JSON): Promise<TxResponse | undefined> {
     if (injectiveAddress === '') {
       alert('No Wallet Connected')
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -161,12 +158,12 @@ const ContractContextProvider = (props: Props): JSX.Element => {
         admin: '',
         codeId,
         label: '',
-        msg
+        msg,
       })
 
       const resp = await msgBroadcastClient.broadcast({
         msgs: instantiateMsg,
-        injectiveAddress
+        injectiveAddress,
       })
 
       return resp
@@ -187,7 +184,7 @@ const ContractContextProvider = (props: Props): JSX.Element => {
         uploadCode,
         instantiateContract,
         executeContract,
-        queryContract
+        queryContract,
       }}
     >
       {props.children}
@@ -197,7 +194,7 @@ const ContractContextProvider = (props: Props): JSX.Element => {
 
 export default ContractContextProvider
 
-async function readFileAsUint8Array (file: File): Promise<Uint8Array> {
+async function readFileAsUint8Array(file: File): Promise<Uint8Array> {
   return await new Promise((resolve, reject) => {
     const reader = new FileReader()
 

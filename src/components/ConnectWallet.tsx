@@ -10,14 +10,10 @@ const ConnectWallet = (): JSX.Element => {
     void connectWallet()
   }
 
-  const btnText = (injectiveAddress !== '')
-    ? `${injectiveAddress.slice(0, 5)}...${injectiveAddress.slice(-3)}`
-    : 'Connect Wallet'
+  const btnText =
+    injectiveAddress !== '' ? `${injectiveAddress.slice(0, 5)}...${injectiveAddress.slice(-3)}` : 'Connect Wallet'
   return (
-    <button
-      onClick={handleConnectWallet}
-      className='btn'
-    >
+    <button onClick={handleConnectWallet} className="btn">
       {btnText}
     </button>
   )

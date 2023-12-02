@@ -5,7 +5,7 @@ import {
   MsgExecuteContractCompat,
   // fromBase64,
   // getInjectiveAddress,
-  toBase64
+  toBase64,
 } from '@injectivelabs/sdk-ts'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useWalletStore } from './WalletContextProvider'
@@ -26,7 +26,7 @@ const CounterContext = createContext<StoreState>({
   count: 0,
   isLoading: true,
   incrementCount: async () => {},
-  setContractCounter: async (_number) => {}
+  setContractCounter: async (_number) => {},
 })
 
 export const useCounterStore = (): StoreState => useContext(CounterContext)
@@ -45,11 +45,11 @@ const CounterContextProvider = (props: Props): JSX.Element => {
     void fetchCount()
   }, [])
 
-  async function fetchCount (): Promise<void> {
+  async function fetchCount(): Promise<void> {
     try {
       const response = (await chainGrpcWasmApi.fetchSmartContractState(
         COUNTER_CONTRACT_ADDRESS,
-        toBase64({ get_count: {} })
+        toBase64({ get_count: {} }),
       )) as { data: Uint8Array }
 
       const { count } = JSON.parse(new TextDecoder('utf-8').decode(response.data)) as { count: number }
@@ -59,7 +59,7 @@ const CounterContextProvider = (props: Props): JSX.Element => {
     }
   }
 
-  async function incrementCount (): Promise<void> {
+  async function incrementCount(): Promise<void> {
     if (injectiveAddress === '') {
       alert('No Wallet Connected')
       return
@@ -72,13 +72,13 @@ const CounterContextProvider = (props: Props): JSX.Element => {
         contractAddress: COUNTER_CONTRACT_ADDRESS,
         sender: injectiveAddress,
         msg: {
-          increment: {}
-        }
+          increment: {},
+        },
       })
 
       await msgBroadcastClient.broadcast({
         msgs: msg,
-        injectiveAddress
+        injectiveAddress,
       })
       void fetchCount()
     } catch (e) {
@@ -88,7 +88,7 @@ const CounterContextProvider = (props: Props): JSX.Element => {
     }
   }
 
-  async function setContractCounter (number: string): Promise<void> {
+  async function setContractCounter(number: string): Promise<void> {
     if (injectiveAddress === '') {
       alert('No Wallet Connected')
       return
@@ -107,14 +107,14 @@ const CounterContextProvider = (props: Props): JSX.Element => {
         sender: injectiveAddress,
         msg: {
           reset: {
-            count: parseInt(number, 10)
-          }
-        }
+            count: parseInt(number, 10),
+          },
+        },
       })
 
       await msgBroadcastClient.broadcast({
         msgs: msg,
-        injectiveAddress
+        injectiveAddress,
       })
 
       void fetchCount()
@@ -131,7 +131,7 @@ const CounterContextProvider = (props: Props): JSX.Element => {
         count,
         isLoading,
         incrementCount,
-        setContractCounter
+        setContractCounter,
       }}
     >
       {props.children}
