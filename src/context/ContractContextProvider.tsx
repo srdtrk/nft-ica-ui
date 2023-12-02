@@ -77,7 +77,7 @@ const ContractContextProvider = (props: Props): JSX.Element => {
 
       return toBase64(response.data)
     } catch (e) {
-      alert((e as any).message)
+      alert(e)
     } finally {
       setStatus(Status.Idle)
     }
@@ -111,7 +111,7 @@ const ContractContextProvider = (props: Props): JSX.Element => {
 
       return resp
     } catch (e) {
-      alert((e as any).message)
+      alert(e)
     } finally {
       setStatus(Status.Idle)
     }
@@ -140,7 +140,7 @@ const ContractContextProvider = (props: Props): JSX.Element => {
 
       return resp
     } catch (e) {
-      alert((e as any).message)
+      alert(e)
     } finally {
       setStatus(Status.Idle)
     }
@@ -171,7 +171,7 @@ const ContractContextProvider = (props: Props): JSX.Element => {
 
       return resp
     } catch (e) {
-      alert((e as any).message)
+      alert(e)
     } finally {
       setStatus(Status.Idle)
     }

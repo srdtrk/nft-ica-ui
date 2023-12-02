@@ -1,9 +1,9 @@
 import { useWalletStore } from '@/context/WalletContextProvider'
 import React from 'react'
 
-interface Props {}
+// interface Props {}
 
-const ConnectWallet = (_props: Props): JSX.Element => {
+const ConnectWallet = (): JSX.Element => {
   const { connectWallet, injectiveAddress } = useWalletStore()
 
   const handleConnectWallet = (): void => {

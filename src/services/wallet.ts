@@ -5,15 +5,15 @@ import {
   CHAIN_ID,
   ETHEREUM_CHAIN_ID,
   // IS_TESTNET,
-  alchemyRpcEndpoint,
-  alchemyWsRpcEndpoint
+  alchemyRpcEndpoint
+  // alchemyWsRpcEndpoint
 } from './constants'
 
 export const walletStrategy = new WalletStrategy({
   chainId: CHAIN_ID,
   ethereumOptions: {
     ethereumChainId: ETHEREUM_CHAIN_ID,
-    wsRpcUrl: alchemyWsRpcEndpoint,
+    // wsRpcUrl: alchemyWsRpcEndpoint,
     rpcUrl: alchemyRpcEndpoint
   }
 })

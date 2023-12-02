@@ -3,7 +3,7 @@ import { chainGrpcWasmApi, msgBroadcastClient } from '@/services/services'
 // import { getAddresses } from '@/services/wallet'
 import {
   MsgExecuteContractCompat,
-  fromBase64,
+  // fromBase64,
   // getInjectiveAddress,
   toBase64
 } from '@injectivelabs/sdk-ts'
@@ -50,12 +50,12 @@ const CounterContextProvider = (props: Props): JSX.Element => {
       const response = (await chainGrpcWasmApi.fetchSmartContractState(
         COUNTER_CONTRACT_ADDRESS,
         toBase64({ get_count: {} })
-      )) as { data: string }
+      )) as { data: Uint8Array }
 
-      const { count } = fromBase64(response.data) as { count: number }
+      const { count } = JSON.parse(new TextDecoder('utf-8').decode(response.data)) as { count: number }
       setCount(count)
     } catch (e) {
-      alert((e as any).message)
+      alert(e)
     }
   }
 
@@ -82,7 +82,7 @@ const CounterContextProvider = (props: Props): JSX.Element => {
       })
       void fetchCount()
     } catch (e) {
-      alert((e as any).message)
+      alert(e)
     } finally {
       setStatus(Status.Idle)
     }
@@ -119,7 +119,7 @@ const CounterContextProvider = (props: Props): JSX.Element => {
 
       void fetchCount()
     } catch (e) {
-      alert((e as any).message)
+      alert(e)
     } finally {
       setStatus(Status.Idle)
     }
