@@ -166,19 +166,25 @@ const ContractContextProvider = (props: Props): JSX.Element => {
 
     setStatus(Status.Loading)
 
+    console.log('instantiateContract: ', codeId)
+
     try {
       const instantiateMsg = MsgInstantiateContract.fromJSON({
         sender: injectiveAddress,
         admin: '',
         codeId,
-        label: '',
+        label: 'lfslbvlkhvls',
         msg,
       })
+
+      console.log('instantiateContract2')
 
       const resp = await msgBroadcastClient.broadcast({
         msgs: instantiateMsg,
         injectiveAddress,
       })
+
+      console.log('instantiateContract3: ', resp)
 
       return resp
     } catch (e) {

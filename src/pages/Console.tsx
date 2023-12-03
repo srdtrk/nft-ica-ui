@@ -18,7 +18,7 @@ interface State {
 
 const initialState: State = {
   inputValue: '',
-  selectedOption: ConsoleOptions.StoreCode,
+  selectedOption: ConsoleOptions.Query,
 }
 
 const ConsolePage = (): JSX.Element => {
@@ -33,13 +33,12 @@ const Console = (): JSX.Element => {
   const [state, setState] = useState<State>(initialState)
   const [outputValue, setOutputValue] = useState('')
   const {
-    wasmFile,
     setWasmFile,
     codeId,
     setCodeId,
     contractAddress,
     setContractAddress,
-    isLoading,
+    // isLoading,
     uploadCode,
     instantiateContract,
     executeContract,
@@ -90,21 +89,33 @@ const Console = (): JSX.Element => {
       setOutputValue(JSON.stringify(txResponse, null, 2))
     }
   }
-  const handleQuery = async (): Promise<void> => {
-    const txResponse = await queryContract(JSON.parse(state.inputValue))
-    if (txResponse !== undefined) {
-      setOutputValue(JSON.stringify(txResponse, null, 2))
-    }
-  }
   const handleSubmit = (): void => {
     if (state.selectedOption === ConsoleOptions.StoreCode) {
       void handleStoreCode()
     } else if (state.selectedOption === ConsoleOptions.Instantiate) {
-      // handleInstantiate()
+      void handleInstantiate()
     } else if (state.selectedOption === ConsoleOptions.Execute) {
-      // handleExecute()
+      void handleExecute()
     } else if (state.selectedOption === ConsoleOptions.Query) {
       void handleQuery()
+    }
+  }
+  const handleInstantiate = async (): Promise<void> => {
+    const txResponse = await instantiateContract(JSON.parse(state.inputValue))
+    if (txResponse !== undefined) {
+      setOutputValue(JSON.stringify(txResponse, null, 2))
+    }
+  }
+  const handleExecute = async (): Promise<void> => {
+    const txResponse = await executeContract(JSON.parse(state.inputValue))
+    if (txResponse !== undefined) {
+      setOutputValue(JSON.stringify(txResponse, null, 2))
+    }
+  }
+  const handleQuery = async (): Promise<void> => {
+    const txResponse = await queryContract(JSON.parse(state.inputValue))
+    if (txResponse !== undefined) {
+      setOutputValue(JSON.stringify(txResponse, null, 2))
     }
   }
 
