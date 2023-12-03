@@ -26,3 +26,9 @@ export const NETWORK: Network = (env.NEXT_NETWORK as Network) ?? Network.Testnet
 export const IS_TESTNET: boolean = [Network.Testnet, Network.TestnetK8s].includes(NETWORK)
 
 export const COUNTER_CONTRACT_ADDRESS = 'inj1t8rhq5vcxqgw68ldg0k2mjxjvzshuah6tnugvy'
+
+// My Contract Constants
+
+export const CW_721_ICA_EXTENSION_CODE_ID = 4457
+export const NFT_ICA_COORIDINATOR_CODE_ID = 4458
+export const CW_ICA_CONTROLLER_CODE_ID = 4459

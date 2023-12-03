@@ -18,9 +18,12 @@ enum Status {
 }
 
 interface StoreState {
-  wasmFile: File | null
-  codeId: number
+  wasmFile: Uint8Array | null
+  setWasmFile: (file: Uint8Array | null) => void
+  codeId: number | null
+  setCodeId: (codeId: number | null) => void
   contractAddress: string
+  setContractAddress: (contractAddress: string) => void
   isLoading: boolean
   uploadCode: () => Promise<TxResponse | undefined>
   instantiateContract: (msg: JSON) => Promise<TxResponse | undefined>
@@ -33,8 +36,11 @@ interface StoreState {
 
 const ContractContext = createContext<StoreState>({
   wasmFile: null,
-  codeId: 0,
+  setWasmFile: () => {},
+  codeId: null,
+  setCodeId: () => {},
   contractAddress: '',
+  setContractAddress: () => {},
   isLoading: false,
   uploadCode: async () => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -53,16 +59,16 @@ const ContractContext = createContext<StoreState>({
   },
 })
 
-export const useContextStore = (): StoreState => useContext(ContractContext)
+export const useContractStore = (): StoreState => useContext(ContractContext)
 
 interface Props {
   children?: React.ReactNode
 }
 
 const ContractContextProvider = (props: Props): JSX.Element => {
-  const [wasmFile, setWasmFile] = useState<File | null>(null)
-  const [codeId] = useState(0)
-  const [contractAddress] = useState('')
+  const [wasmFile, setWasmFile] = useState<Uint8Array | null>(null)
+  const [codeId, setCodeId] = useState<number | null>(null)
+  const [contractAddress, setContractAddress] = useState('')
   const [status, setStatus] = useState<Status>(Status.Idle)
   const isLoading = status === Status.Loading
   const { injectiveAddress } = useWalletStore()
@@ -94,9 +100,10 @@ const ContractContextProvider = (props: Props): JSX.Element => {
     setStatus(Status.Loading)
 
     try {
+      console.log('uploadCode')
       const execMsg = MsgStoreCode.fromJSON({
         sender: injectiveAddress,
-        wasmBytes: await readFileAsUint8Array(wasmFile),
+        wasmBytes: wasmFile,
       })
 
       const resp = await msgBroadcastClient.broadcast({
@@ -104,6 +111,7 @@ const ContractContextProvider = (props: Props): JSX.Element => {
         injectiveAddress,
       })
 
+      console.log('uploadCode2')
       setWasmFile(null)
 
       return resp
@@ -150,6 +158,12 @@ const ContractContextProvider = (props: Props): JSX.Element => {
       return {} as TxResponse
     }
 
+    if (codeId === null) {
+      alert('No Code ID selected')
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      return {} as TxResponse
+    }
+
     setStatus(Status.Loading)
 
     try {
@@ -178,8 +192,11 @@ const ContractContextProvider = (props: Props): JSX.Element => {
     <ContractContext.Provider
       value={{
         wasmFile,
+        setWasmFile,
         codeId,
+        setCodeId,
         contractAddress,
+        setContractAddress,
         isLoading,
         uploadCode,
         instantiateContract,
@@ -193,25 +210,3 @@ const ContractContextProvider = (props: Props): JSX.Element => {
 }
 
 export default ContractContextProvider
-
-async function readFileAsUint8Array(file: File): Promise<Uint8Array> {
-  return await new Promise((resolve, reject) => {
-    const reader = new FileReader()
-
-    reader.onload = (event) => {
-      const result = event.target?.result
-      if (result instanceof ArrayBuffer) {
-        const uint8Array = new Uint8Array(result)
-        resolve(uint8Array)
-      } else {
-        reject(new Error('Read result is not an ArrayBuffer'))
-      }
-    }
-
-    reader.onerror = (event) => {
-      reject(event.target?.error)
-    }
-
-    reader.readAsArrayBuffer(file)
-  })
-}
