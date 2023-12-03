@@ -90,6 +90,12 @@ const Console = (): JSX.Element => {
       setOutputValue(JSON.stringify(txResponse, null, 2))
     }
   }
+  const handleQuery = async (): Promise<void> => {
+    const txResponse = await queryContract(JSON.parse(state.inputValue))
+    if (txResponse !== undefined) {
+      setOutputValue(JSON.stringify(txResponse, null, 2))
+    }
+  }
   const handleSubmit = (): void => {
     if (state.selectedOption === ConsoleOptions.StoreCode) {
       void handleStoreCode()
@@ -98,7 +104,7 @@ const Console = (): JSX.Element => {
     } else if (state.selectedOption === ConsoleOptions.Execute) {
       // handleExecute()
     } else if (state.selectedOption === ConsoleOptions.Query) {
-      // handleQuery()
+      void handleQuery()
     }
   }
 

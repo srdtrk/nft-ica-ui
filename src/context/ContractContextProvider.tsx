@@ -78,7 +78,7 @@ const ContractContextProvider = (props: Props): JSX.Element => {
     try {
       const response = await chainGrpcWasmApi.fetchSmartContractState(contractAddress, toBase64(msg))
 
-      return toBase64(response.data)
+      return Buffer.from(response.data).toString('utf8')
     } catch (e) {
       alert(e)
     } finally {
