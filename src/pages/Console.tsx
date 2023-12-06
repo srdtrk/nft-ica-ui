@@ -9,7 +9,9 @@ enum ConsoleOptions {
   Query = 'Query',
 }
 
-const options = [ConsoleOptions.StoreCode, ConsoleOptions.Instantiate, ConsoleOptions.Execute, ConsoleOptions.Query]
+// removed StoreCode and Instantiate for now since they are not working
+// with metamask
+const options = [ConsoleOptions.Execute, ConsoleOptions.Query]
 
 interface State {
   inputValue: string
