@@ -35,7 +35,8 @@ module.exports = {
   },
   rules: {
     'react/react-in-jsx-scope': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
     // Add your own rules here to override ones from the extended configs.
   },
-  ignorePatterns: ['node_modules', 'dist', 'build', '**config.js', 'next-env.d.ts'],
+  ignorePatterns: ['node_modules', 'dist', 'build', '**config.js', 'next-env.d.ts', 'src/contracts'],
 }

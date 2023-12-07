@@ -20,11 +20,11 @@ SUCCESS Connection {
             runtime_sender: Sender { .. },
         },
         client_id: ClientId(
-            "07-tendermint-193",
+            "07-tendermint-194",
         ),
         connection_id: Some(
             ConnectionId(
-                "connection-183",
+                "connection-184",
             ),
         ),
     },
@@ -37,24 +37,13 @@ SUCCESS Connection {
             runtime_sender: Sender { .. },
         },
         client_id: ClientId(
-            "07-tendermint-2593",
+            "07-tendermint-2602",
         ),
         connection_id: Some(
             ConnectionId(
-                "connection-2951",
+                "connection-2963",
             ),
         ),
     },
-}
-```
-
-```json
-{
-  "ica_controller_code_id": 4459,
-  "cw721_ica_extension_code_id": 4457,
-  "default_chan_init_options": {
-    "connection_id": "test-0",
-    "counterparty_connection_id": "test-1"
-  }
 }
 ```
