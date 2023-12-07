@@ -11,6 +11,7 @@ import {
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useWalletStore } from './WalletContextProvider'
 import type { QueryMsg as Cw721QueryMsg, TokensResponse } from '@/contracts/Cw721IcaExtension.types'
+import type { ExecuteMsg as CoordinatorExecuteMsg } from '@/contracts/NftIcaCoordinator.types'
 
 const NFT_ICA_CONTRACT_ADDRESS = 'inj1vtjjg7z2t5wspsa445w68xlf430eusw7ncyg3r'
 const CW721_CONTRACT_ADDRESS = 'inj12xkc2ga54a6x02cdn0r5z8eyymy32fq330u788'
@@ -57,11 +58,13 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
   }, [])
 
   async function mint(salt: string | null): Promise<TxResponse | undefined> {
-    let msg = '{"mint_ica":{}}'
-    if (salt !== null) {
-      msg = `{"mint_ica":{"salt":"${salt}"}}`
+    const msg: CoordinatorExecuteMsg = {
+      mint_ica: {
+        salt,
+      },
     }
-    return await executeContract(NFT_ICA_CONTRACT_ADDRESS, JSON.parse(msg))
+
+    return await executeContract(NFT_ICA_CONTRACT_ADDRESS, msg)
   }
 
   async function executeIcaMsg(tokenId: string, msg: IcaExecuteMsg): Promise<TxResponse | undefined> {
