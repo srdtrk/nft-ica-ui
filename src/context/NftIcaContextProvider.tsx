@@ -23,7 +23,7 @@ enum Status {
 
 interface StoreState {
   userNftIds: string[]
-  mint: (salt: string) => Promise<TxResponse | undefined>
+  mint: () => Promise<TxResponse | undefined>
   executeIcaMsg: (tokenId: string, msg: IcaExecuteMsg) => Promise<TxResponse | undefined>
   isLoading: boolean
 }
@@ -57,10 +57,12 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
     void fetchNftIds()
   }, [])
 
-  async function mint(salt: string | null): Promise<TxResponse | undefined> {
+  async function mint(): Promise<TxResponse | undefined> {
+    // Generate a number between 1000000000000000 and 9999999999999999
+    const randomNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000)
     const msg: CoordinatorExecuteMsg = {
       mint_ica: {
-        salt,
+        salt: randomNumber.toString(),
       },
     }
 

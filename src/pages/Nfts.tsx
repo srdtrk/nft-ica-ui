@@ -14,7 +14,7 @@ function Nfts(): JSX.Element {
 
   const handleMintNft = (): void => {
     // Implement the logic to mint NFT
-    void mint('')
+    void mint()
   }
 
   return (
