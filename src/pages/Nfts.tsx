@@ -1,4 +1,5 @@
 import NftIcaContextProvider, { useNftIcaStore } from '@/context/NftIcaContextProvider'
+import NftCard from '@/components/NftCard'
 // import React, { useEffect, useState } from 'react'
 
 function NftsPage(): JSX.Element {
@@ -18,23 +19,15 @@ function Nfts(): JSX.Element {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-2xl">
-        <h2 className="text-2xl font-bold mb-4">Your NFTs</h2>
-        <ul className="mb-6">
-          {userNftIds.map((id, index) => (
-            <li key={index} className="border-b py-2">
-              NFT ID: {id}
-            </li>
-          ))}
-        </ul>
-        <button
-          onClick={handleMintNft}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Mint NFT
-        </button>
+    <div className="p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+        {userNftIds.map((id, index) => (
+          <NftCard key={index} id={id} icaAddress={id} /> // Update the image URL path as needed
+        ))}
       </div>
+      <button onClick={handleMintNft} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Mint NFT
+      </button>
     </div>
   )
 }

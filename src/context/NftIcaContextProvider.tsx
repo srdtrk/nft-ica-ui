@@ -83,6 +83,11 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
   }
 
   async function fetchNftIds(): Promise<void> {
+    if (injectiveAddress === '') {
+      alert('No Wallet Connected')
+      return
+    }
+
     const msg: Cw721QueryMsg = {
       tokens: {
         owner: injectiveAddress,
