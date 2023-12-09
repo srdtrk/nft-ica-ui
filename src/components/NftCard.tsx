@@ -10,7 +10,7 @@ const NftCard: React.FC<NftCardProps> = ({ id, icaAddress }) => {
   const svgString = toSvg(icaAddress, 100) // Generate SVG string
 
   return (
-    <div className="max-w-sm rounded overflow-hidden shadow-lg">
+    <div className="max-w-sm rounded overflow-hidden shadow-lg bg-white">
       <div className="w-full" dangerouslySetInnerHTML={{ __html: svgString }} />
       <div className="px-6 py-4">
         <div className="font-bold text-xl mb-2">NFT ID: {id}</div>

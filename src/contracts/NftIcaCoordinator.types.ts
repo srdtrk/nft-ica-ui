@@ -132,6 +132,12 @@ export type QueryMsg = {
     token_id: string;
   };
 } | {
+  get_ica_addresses: {
+    token_ids: string[];
+  };
+} | {
+  get_mint_queue: {};
+} | {
   ownership: {};
 };
 export interface ContractState {
@@ -140,6 +146,18 @@ export interface ContractState {
   ica_controller_code_id: number;
 }
 export type String = string;
+export interface GetIcaAddressesResponse {
+  pairs: NftIcaPair[];
+}
+export interface NftIcaPair {
+  ica_address: string;
+  nft_id: string;
+}
+export type ArrayOfQueueItem = QueueItem[];
+export interface QueueItem {
+  owner: string;
+  token_id: string;
+}
 export interface OwnershipForString {
   owner?: string | null;
   pending_expiry?: Expiration | null;

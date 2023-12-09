@@ -8,13 +8,20 @@ import {
   // getInjectiveAddress,
   toBase64,
 } from '@injectivelabs/sdk-ts'
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { useWalletStore } from './WalletContextProvider'
 import type { QueryMsg as Cw721QueryMsg, TokensResponse } from '@/contracts/Cw721IcaExtension.types'
-import type { ExecuteMsg as CoordinatorExecuteMsg } from '@/contracts/NftIcaCoordinator.types'
+import type {
+  ArrayOfQueueItem,
+  ExecuteMsg as CoordinatorExecuteMsg,
+  QueryMsg as CoordinatorQueryMsg,
+  QueueItem,
+} from '@/contracts/NftIcaCoordinator.types'
 
-const NFT_ICA_CONTRACT_ADDRESS = 'inj1vtjjg7z2t5wspsa445w68xlf430eusw7ncyg3r'
-const CW721_CONTRACT_ADDRESS = 'inj12xkc2ga54a6x02cdn0r5z8eyymy32fq330u788'
+// const NFT_ICA_CONTRACT_ADDRESS = 'inj1ltfvqjwl3qfhx0a7w4k09t2lvl8wpwc54ylutp'
+// const CW721_CONTRACT_ADDRESS = 'inj1yc9vdylvcm6v5my2r3jevpsl3037dsl7ve2n2n'
+const NFT_ICA_CONTRACT_ADDRESS = 'inj1hrfaat0ayrdtfuydzxl0g0sd64kwdz75wz4jtv'
+const CW721_CONTRACT_ADDRESS = 'inj169cafgpwssmccn7939tfl40zce2zzp35c9nxzy'
 
 enum Status {
   Idle = 'idle',
@@ -23,6 +30,7 @@ enum Status {
 
 interface StoreState {
   userNftIds: string[]
+  userWaitingNftIds: QueueItem[]
   mint: () => Promise<TxResponse | undefined>
   executeIcaMsg: (tokenId: string, msg: IcaExecuteMsg) => Promise<TxResponse | undefined>
   isLoading: boolean
@@ -30,6 +38,7 @@ interface StoreState {
 
 const NftIcaContext = createContext<StoreState>({
   userNftIds: [],
+  userWaitingNftIds: [],
   mint: async () => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return {} as TxResponse
@@ -49,17 +58,21 @@ interface Props {
 
 const NftIcaContextProvider = (props: Props): JSX.Element => {
   const [userNftIds, setUserNftIds] = useState<string[]>([])
+  const [userWaitingNftIds, setUserWaitingNftIds] = useState<QueueItem[]>([])
+  const waitlistIntervalIdRef = useRef<number | null>(null)
   const [status, setStatus] = useState<Status>(Status.Idle)
   const isLoading = status === Status.Loading
   const { injectiveAddress } = useWalletStore()
 
   useEffect(() => {
-    void fetchNftIds()
+    void fetchNftIds().then(fetchWaitingNftIds)
   }, [])
 
   async function mint(): Promise<TxResponse | undefined> {
     // Generate a number between 1000000000000000 and 9999999999999999
     const randomNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000)
+    // Salt matters for instantiate2 to generate a unique contract address, but this is not supported in injective yet
+    // so the salt will be ignored by the contract. We can still provide it for future compatibility.
     const msg: CoordinatorExecuteMsg = {
       mint_ica: {
         salt: randomNumber.toString(),
@@ -67,7 +80,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
     }
 
     const resp = await executeContract(NFT_ICA_CONTRACT_ADDRESS, msg)
-    void fetchNftIds()
+    void fetchWaitingNftIds()
     return resp
   }
 
@@ -97,6 +110,50 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
     const response = await queryContract<TokensResponse>(CW721_CONTRACT_ADDRESS, msg)
     if (response !== undefined) {
       setUserNftIds(response.tokens)
+    }
+  }
+
+  async function fetchWaitingNftIds(): Promise<void> {
+    if (injectiveAddress === '') {
+      stopInterval()
+      alert('No Wallet Connected')
+      return
+    }
+
+    const msg: CoordinatorQueryMsg = {
+      get_mint_queue: {},
+    }
+
+    let response = await queryContract<ArrayOfQueueItem>(NFT_ICA_CONTRACT_ADDRESS, msg)
+    if (response !== undefined) {
+      response = response?.filter((item) => item.owner === injectiveAddress)
+      if (response !== userWaitingNftIds) {
+        void fetchNftIds()
+      }
+      setUserWaitingNftIds(response)
+      if (response.length === 0) {
+        stopInterval()
+      } else {
+        startInterval()
+      }
+    }
+  }
+
+  function startInterval(): void {
+    if (waitlistIntervalIdRef.current === null) {
+      const intervalId = setInterval(() => {
+        void fetchWaitingNftIds()
+      }, 5000) as unknown as number
+      console.log('startInterval: ', intervalId)
+      waitlistIntervalIdRef.current = intervalId
+    }
+  }
+
+  function stopInterval(): void {
+    if (waitlistIntervalIdRef.current !== null) {
+      clearInterval(waitlistIntervalIdRef.current)
+      console.log('stopInterval: ', waitlistIntervalIdRef.current)
+      waitlistIntervalIdRef.current = null
     }
   }
 
@@ -147,6 +204,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
     <NftIcaContext.Provider
       value={{
         userNftIds,
+        userWaitingNftIds,
         mint,
         executeIcaMsg,
         isLoading,
