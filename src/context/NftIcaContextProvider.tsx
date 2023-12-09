@@ -41,7 +41,7 @@ const NftIcaContext = createContext<StoreState>({
   isLoading: false,
 })
 
-export const useContractStore = (): StoreState => useContext(NftIcaContext)
+export const useNftIcaStore = (): StoreState => useContext(NftIcaContext)
 
 interface Props {
   children?: React.ReactNode
@@ -64,7 +64,9 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
       },
     }
 
-    return await executeContract(NFT_ICA_CONTRACT_ADDRESS, msg)
+    const resp = await executeContract(NFT_ICA_CONTRACT_ADDRESS, msg)
+    void fetchNftIds()
+    return resp
   }
 
   async function executeIcaMsg(tokenId: string, msg: IcaExecuteMsg): Promise<TxResponse | undefined> {

@@ -29,6 +29,14 @@ const Navbar = (): JSX.Element => {
           >
             Console
           </button>
+          <button
+            onClick={() => {
+              navigateTo('/Nfts')
+            }}
+            className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded mx-1"
+          >
+            NFT ICA App
+          </button>
         </div>
         <ConnectWallet />
       </div>
