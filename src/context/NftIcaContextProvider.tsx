@@ -15,6 +15,8 @@ import type {
   ArrayOfQueueItem,
   ExecuteMsg as CoordinatorExecuteMsg,
   QueryMsg as CoordinatorQueryMsg,
+  GetIcaAddressesResponse,
+  NftIcaPair,
   QueueItem,
 } from '@/contracts/NftIcaCoordinator.types'
 
@@ -29,7 +31,7 @@ enum Status {
 }
 
 interface StoreState {
-  userNftIds: string[]
+  userNfts: NftIcaPair[]
   userWaitingNftIds: QueueItem[]
   mint: () => Promise<TxResponse | undefined>
   executeIcaMsg: (tokenId: string, msg: IcaExecuteMsg) => Promise<TxResponse | undefined>
@@ -37,7 +39,7 @@ interface StoreState {
 }
 
 const NftIcaContext = createContext<StoreState>({
-  userNftIds: [],
+  userNfts: [],
   userWaitingNftIds: [],
   mint: async () => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -57,7 +59,7 @@ interface Props {
 }
 
 const NftIcaContextProvider = (props: Props): JSX.Element => {
-  const [userNftIds, setUserNftIds] = useState<string[]>([])
+  const [userNfts, setUserNfts] = useState<NftIcaPair[]>([])
   const [userWaitingNftIds, setUserWaitingNftIds] = useState<QueueItem[]>([])
   const waitlistIntervalIdRef = useRef<number | null>(null)
   const [status, setStatus] = useState<Status>(Status.Idle)
@@ -109,7 +111,16 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
 
     const response = await queryContract<TokensResponse>(CW721_CONTRACT_ADDRESS, msg)
     if (response !== undefined) {
-      setUserNftIds(response.tokens)
+      const msg: CoordinatorQueryMsg = {
+        get_ica_addresses: {
+          token_ids: response.tokens,
+        },
+      }
+
+      const resp = await queryContract<GetIcaAddressesResponse>(NFT_ICA_CONTRACT_ADDRESS, msg)
+      if (resp !== undefined) {
+        setUserNfts(resp?.pairs)
+      }
     }
   }
 
@@ -203,7 +214,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
   return (
     <NftIcaContext.Provider
       value={{
-        userNftIds,
+        userNfts,
         userWaitingNftIds,
         mint,
         executeIcaMsg,
