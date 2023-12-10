@@ -1,6 +1,7 @@
 import NftIcaContextProvider, { useNftIcaStore } from '@/context/NftIcaContextProvider'
 import NftCard from '@/components/NftCard'
 import MintingList from '@/components/MintingList'
+import { useWalletStore } from '@/context/WalletContextProvider'
 // import React, { useEffect, useState } from 'react'
 
 function NftsPage(): JSX.Element {
@@ -13,10 +14,23 @@ function NftsPage(): JSX.Element {
 
 function Nfts(): JSX.Element {
   const { userNfts, userWaitingNftIds, mint } = useNftIcaStore()
+  const { injectiveAddress } = useWalletStore()
 
   const handleMintNft = (): void => {
-    // Implement the logic to mint NFT
     void mint()
+  }
+
+  if (injectiveAddress === '') {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-center p-6 max-w-sm mx-auto bg-red-300 rounded-xl shadow-md flex items-center space-x-4">
+          <div>
+            <div className="text-xl font-medium text-black">Wallet Connection Needed</div>
+            <p className="text-gray-500">Please connect your wallet to proceed.</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

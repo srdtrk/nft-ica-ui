@@ -67,8 +67,10 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
   const { injectiveAddress } = useWalletStore()
 
   useEffect(() => {
-    void fetchNftIds().then(fetchWaitingNftIds)
-  }, [])
+    if (injectiveAddress !== '') {
+      void fetchNftIds().then(fetchWaitingNftIds)
+    }
+  }, [injectiveAddress])
 
   async function mint(): Promise<TxResponse | undefined> {
     // Generate a number between 1000000000000000 and 9999999999999999
@@ -99,6 +101,8 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
 
   async function fetchNftIds(): Promise<void> {
     if (injectiveAddress === '') {
+      stopInterval()
+      console.log('fetchNftIds: No Wallet Connected')
       alert('No Wallet Connected')
       return
     }
