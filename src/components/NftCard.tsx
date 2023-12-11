@@ -14,7 +14,7 @@ const NftCard: React.FC<NftCardProps> = ({ id, icaAddress }) => {
   const svgString = toSvg(icaAddress, 100) // Generate SVG string
 
   const handleClick = (): void => {
-    void router.push(`nfts/${id}`)
+    void router.push(`nfts/${id}?icaAddress=${encodeURIComponent(icaAddress)}`)
   }
 
   // Handle "Enter" key to make it accessible via keyboard
