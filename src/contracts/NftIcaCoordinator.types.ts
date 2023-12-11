@@ -34,7 +34,7 @@ export type ExecuteMsg = {
 };
 export type IcaControllerCallbackMsg = {
   on_acknowledgement_packet_callback: {
-    ica_acknowledgement: AcknowledgementData;
+    ica_acknowledgement: Data;
     original_packet: IbcPacket;
     relayer: Addr;
   };
@@ -50,7 +50,7 @@ export type IcaControllerCallbackMsg = {
     tx_encoding: TxEncoding;
   };
 };
-export type AcknowledgementData = {
+export type Data = {
   result: Binary;
 } | {
   error: string;
@@ -61,7 +61,9 @@ export type Uint64 = string;
 export type Addr = string;
 export type IbcOrder = "ORDER_UNORDERED" | "ORDER_ORDERED";
 export type ExecuteMsg1 = {
-  create_channel: ChannelOpenInitOptions;
+  create_channel: {
+    channel_open_init_options?: ChannelOpenInitOptions | null;
+  };
 } | {
   send_custom_ica_messages: {
     messages: Binary;
@@ -69,14 +71,129 @@ export type ExecuteMsg1 = {
     timeout_seconds?: number | null;
   };
 } | {
-  update_admin: {
-    admin: string;
+  send_cosmos_msgs: {
+    messages: CosmosMsgForEmpty[];
+    packet_memo?: string | null;
+    timeout_seconds?: number | null;
   };
 } | {
   update_callback_address: {
     callback_address?: string | null;
   };
+} | {
+  update_ownership: Action;
 };
+export type CosmosMsgForEmpty = {
+  bank: BankMsg;
+} | {
+  custom: Empty;
+} | {
+  stargate: {
+    type_url: string;
+    value: Binary;
+    [k: string]: unknown;
+  };
+} | {
+  ibc: IbcMsg;
+} | {
+  wasm: WasmMsg;
+} | {
+  gov: GovMsg;
+};
+export type BankMsg = {
+  send: {
+    amount: Coin[];
+    to_address: string;
+    [k: string]: unknown;
+  };
+} | {
+  burn: {
+    amount: Coin[];
+    [k: string]: unknown;
+  };
+};
+export type Uint128 = string;
+export type IbcMsg = {
+  transfer: {
+    amount: Coin;
+    channel_id: string;
+    timeout: IbcTimeout;
+    to_address: string;
+    [k: string]: unknown;
+  };
+} | {
+  send_packet: {
+    channel_id: string;
+    data: Binary;
+    timeout: IbcTimeout;
+    [k: string]: unknown;
+  };
+} | {
+  close_channel: {
+    channel_id: string;
+    [k: string]: unknown;
+  };
+};
+export type WasmMsg = {
+  execute: {
+    contract_addr: string;
+    funds: Coin[];
+    msg: Binary;
+    [k: string]: unknown;
+  };
+} | {
+  instantiate: {
+    admin?: string | null;
+    code_id: number;
+    funds: Coin[];
+    label: string;
+    msg: Binary;
+    [k: string]: unknown;
+  };
+} | {
+  instantiate2: {
+    admin?: string | null;
+    code_id: number;
+    funds: Coin[];
+    label: string;
+    msg: Binary;
+    salt: Binary;
+    [k: string]: unknown;
+  };
+} | {
+  migrate: {
+    contract_addr: string;
+    msg: Binary;
+    new_code_id: number;
+    [k: string]: unknown;
+  };
+} | {
+  update_admin: {
+    admin: string;
+    contract_addr: string;
+    [k: string]: unknown;
+  };
+} | {
+  clear_admin: {
+    contract_addr: string;
+    [k: string]: unknown;
+  };
+};
+export type GovMsg = {
+  vote: {
+    proposal_id: number;
+    vote: VoteOption;
+    [k: string]: unknown;
+  };
+} | {
+  vote_weighted: {
+    options: WeightedVoteOption[];
+    proposal_id: number;
+    [k: string]: unknown;
+  };
+};
+export type VoteOption = "yes" | "no" | "abstain" | "no_with_veto";
+export type Decimal = string;
 export type Action = {
   transfer_ownership: {
     expiry?: Expiration | null;
@@ -119,6 +236,19 @@ export interface IbcChannel {
   endpoint: IbcEndpoint;
   order: IbcOrder;
   version: string;
+  [k: string]: unknown;
+}
+export interface Coin {
+  amount: Uint128;
+  denom: string;
+  [k: string]: unknown;
+}
+export interface Empty {
+  [k: string]: unknown;
+}
+export interface WeightedVoteOption {
+  option: VoteOption;
+  weight: Decimal;
   [k: string]: unknown;
 }
 export type QueryMsg = {
