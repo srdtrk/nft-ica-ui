@@ -1,9 +1,10 @@
-import type { CosmosMsgForEmpty, VoteOption } from '@/contracts/NftIcaCoordinator.types'
+import type { Coin, CosmosMsgForEmpty, VoteOption } from '@/contracts/NftIcaCoordinator.types'
 import React, { useState } from 'react'
 import Dropdown from './DrowdownMenu'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { defaultNewMsg } from './IcaTxBuilder'
+import AmountSelector, { defaultNewAmount } from './AmountSelector'
 
 interface CosmosMsgBuilderProps {
   index: number
@@ -27,6 +28,8 @@ const initialState: State = {
   messageType: MessageType.Vote,
 }
 
+export const defaultSendMsg: CosmosMsgForEmpty = { bank: { send: { amount: [], to_address: '' } } }
+
 export function CosmosMsgBuilder({ index, setCosmosMsg, deleteCosmosMsg }: CosmosMsgBuilderProps): JSX.Element {
   const [state, setState] = useState(initialState)
 
@@ -36,6 +39,9 @@ export function CosmosMsgBuilder({ index, setCosmosMsg, deleteCosmosMsg }: Cosmo
     switch (messageType) {
       case MessageType.Vote:
         setMsg(defaultNewMsg)
+        break
+      case MessageType.Send:
+        setMsg(defaultSendMsg)
         break
       // Add cases for other message types here...
       default:
@@ -58,6 +64,8 @@ export function CosmosMsgBuilder({ index, setCosmosMsg, deleteCosmosMsg }: Cosmo
       case MessageType.Vote:
         return <VoteMsgBuilder setMsg={setMsg} />
       // Add cases for other message types here...
+      case MessageType.Send:
+        return <SendMsgBuilder setMsg={setMsg} />
       default:
         return null
     }
@@ -125,6 +133,60 @@ const VoteMsgBuilder = ({ setMsg }: BuilderProps): JSX.Element => {
           Vote Option
         </label>
         <Dropdown options={['yes', 'no', 'abstain', 'no_with_veto']} onSelect={handleVoteSelect} />
+      </div>
+    </div>
+  )
+}
+
+interface SendMsgBuilderProps {
+  setMsg: (message: CosmosMsgForEmpty) => void
+}
+
+const SendMsgBuilder = ({ setMsg }: SendMsgBuilderProps): JSX.Element => {
+  const [amounts, setAmounts] = useState<Coin[]>([])
+  const [toAddress, setToAddress] = useState<string>('')
+
+  const addAmount = (): void => {
+    setAmounts([...amounts, defaultNewAmount])
+  }
+
+  const deleteAmount = (index: number): void => {
+    const newAmounts = amounts.filter((_, i) => i !== index)
+    setAmounts(newAmounts)
+  }
+
+  const setAmount = (index: number, amount: Coin): void => {
+    const newAmounts = [...amounts]
+    newAmounts[index] = amount
+    setAmounts(newAmounts)
+    setMsg({ bank: { send: { amount: newAmounts, to_address: toAddress } } })
+  }
+
+  const handleToAddressChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setToAddress(event.target.value)
+    setMsg({ bank: { send: { amount: amounts, to_address: event.target.value } } })
+  }
+
+  return (
+    <div className="p-4 border border-gray-300 rounded">
+      {amounts.map((_, index) => (
+        <AmountSelector key={index} index={index} setAmount={setAmount} onDelete={deleteAmount} />
+      ))}
+      <button onClick={addAmount} className="mt-2 p-2 bg-blue-500 text-white rounded">
+        Add Amount
+      </button>
+
+      <div className="mt-4">
+        <label htmlFor="toAddress" className="block text-sm font-medium text-gray-700">
+          To Address
+        </label>
+        <input
+          type="text"
+          id="toAddress"
+          value={toAddress}
+          onChange={handleToAddressChange}
+          className="mt-1 block w-full p-2 border border-gray-300 rounded shadow-sm bg-gray-50"
+        />
       </div>
     </div>
   )
