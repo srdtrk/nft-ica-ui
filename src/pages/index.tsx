@@ -1,58 +1,51 @@
-import CounterContextProvider, { useCounterStore } from '@/context/CounterContextProvider'
-import React, { useEffect, useState } from 'react'
+import NftIcaContextProvider, { useNftIcaStore } from '@/context/NftIcaContextProvider'
+import NftCard from '@/components/NftCard'
+import MintingList from '@/components/MintingList'
+import { useWalletStore } from '@/context/WalletContextProvider'
+// import React, { useEffect, useState } from 'react'
 
-function HomePage(): JSX.Element {
+function NftsPage(): JSX.Element {
   return (
-    <CounterContextProvider>
-      <Home />
-    </CounterContextProvider>
+    <NftIcaContextProvider>
+      <Nfts />
+    </NftIcaContextProvider>
   )
 }
 
-function Home(): JSX.Element {
-  const [inputCount, setInputCount] = useState('0')
-  const { count, isLoading, incrementCount, setContractCounter } = useCounterStore()
-  useEffect(() => {
-    setInputCount(count.toString())
-  }, [count])
+function Nfts(): JSX.Element {
+  const { userNfts, userWaitingNftIds, mint } = useNftIcaStore()
+  const { injectiveAddress } = useWalletStore()
 
-  function handleSetCount(): void {
-    void setContractCounter(inputCount)
+  const handleMintNft = (): void => {
+    void mint()
   }
 
-  function handleIncrementCount(): void {
-    void incrementCount()
-  }
-
-  return (
-    <div className="flex justify-center pt-20">
-      <div className="bg-white rounded-lg p-5 text-center">
-        <div>
-          <h1>The Count is</h1>
-          <p>{isLoading ? 'loading...' : count}</p>
-        </div>
-        <div>
-          <button onClick={handleIncrementCount} className="btn w-full" disabled={isLoading}>
-            +
-          </button>
-          <div className="py-2 flex gap-2">
-            <input
-              type="number"
-              value={inputCount}
-              step={1}
-              onChange={(e) => {
-                setInputCount(e.target.value)
-              }}
-              className="border rounded-lg p-2"
-            />
-            <button onClick={handleSetCount} className="btn" disabled={isLoading}>
-              Set Count
-            </button>
+  if (injectiveAddress === '') {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-center p-6 max-w-sm mx-auto bg-red-300 rounded-xl shadow-md flex items-center space-x-4">
+          <div>
+            <div className="text-xl font-medium text-black">Wallet Connection Needed</div>
+            <p className="text-gray-500">Please connect your wallet to proceed.</p>
           </div>
         </div>
       </div>
+    )
+  }
+
+  return (
+    <div className="p-6">
+      {userWaitingNftIds.length > 0 && <MintingList mintingNfts={userWaitingNftIds.map((nft) => nft.token_id)} />}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+        {userNfts.map((info, index) => (
+          <NftCard key={index} id={info.nft_id} icaAddress={info.ica_address} /> // Update the image URL path as needed
+        ))}
+      </div>
+      <button onClick={handleMintNft} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Mint NFT
+      </button>
     </div>
   )
 }
 
-export default HomePage
+export default NftsPage

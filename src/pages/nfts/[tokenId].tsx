@@ -32,7 +32,7 @@ const NftDetail = (): JSX.Element => {
 
   // Function to navigate back to the NFTs list
   const goBack = (): void => {
-    void router.push('/Nfts')
+    void router.push('/')
   }
 
   const broadcastIcaTx = async (messages: CosmosMsgForEmpty[]): Promise<TxResponse | undefined> => {
