@@ -3,10 +3,23 @@ import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { toSvg } from 'jdenticon'
+import NftIcaContextProvider, { useNftIcaStore } from '@/context/NftIcaContextProvider'
+import type { CosmosMsgForEmpty, ExecuteMsg1 as IcaExecuteMsg } from '@/contracts/NftIcaCoordinator.types'
+import type { TxResponse } from '@injectivelabs/sdk-ts'
 
-const NftDetailPage = (): JSX.Element => {
+function NftDetailPage(): JSX.Element {
+  return (
+    <NftIcaContextProvider>
+      <NftDetail />
+    </NftIcaContextProvider>
+  )
+}
+
+const NftDetail = (): JSX.Element => {
   const router = useRouter()
   const { tokenId, icaAddress } = router.query
+
+  const { executeIcaMsg } = useNftIcaStore()
 
   // Check if tokenId and icaAddress are valid strings
   if (typeof tokenId !== 'string' || typeof icaAddress !== 'string') {
@@ -19,6 +32,17 @@ const NftDetailPage = (): JSX.Element => {
   // Function to navigate back to the NFTs list
   const goBack = (): void => {
     void router.push('/Nfts')
+  }
+
+  const broadcastIcaTx = async (messages: CosmosMsgForEmpty[]): Promise<TxResponse | undefined> => {
+    const execMsg: IcaExecuteMsg = {
+      send_cosmos_msgs: {
+        messages,
+      },
+    }
+
+    const resp = await executeIcaMsg(tokenId, execMsg)
+    return resp
   }
 
   return (
