@@ -28,6 +28,10 @@ const IcaTxBuilder = ({ broadcastTx }: IcaTxBuilderProps): JSX.Element => {
   }
 
   const handleBroadcast = (): void => {
+    if (messages.length === 0) {
+      alert('No messages to broadcast')
+      return
+    }
     void broadcastTx(messages).then(() => {
       setMessages([])
     })

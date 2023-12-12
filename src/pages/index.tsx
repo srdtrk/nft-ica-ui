@@ -23,7 +23,7 @@ function Nfts(): JSX.Element {
   if (injectiveAddress === '') {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="text-center p-6 max-w-sm mx-auto bg-red-300 rounded-xl shadow-md flex items-center space-x-4">
+        <div className="text-center p-6 max-w-sm mx-auto bg-white rounded-xl shadow-md flex items-center space-x-4">
           <div>
             <div className="text-xl font-medium text-black">Wallet Connection Needed</div>
             <p className="text-gray-500">Please connect your wallet to proceed.</p>
