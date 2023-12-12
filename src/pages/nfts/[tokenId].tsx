@@ -6,6 +6,7 @@ import { toSvg } from 'jdenticon'
 import NftIcaContextProvider, { useNftIcaStore } from '@/context/NftIcaContextProvider'
 import type { CosmosMsgForEmpty, ExecuteMsg1 as IcaExecuteMsg } from '@/contracts/NftIcaCoordinator.types'
 import type { TxResponse } from '@injectivelabs/sdk-ts'
+import IcaTxBuilder from '@/components/IcaTxBuilder'
 
 function NftDetailPage(): JSX.Element {
   return (
@@ -79,6 +80,8 @@ const NftDetail = (): JSX.Element => {
 
         {/* Right Section: Placeholder for Interchain Transaction Component */}
         <div className="flex-1">
+          <h2 className="text-3xl font-bold">Interchain Transaction Builder</h2>
+          <IcaTxBuilder broadcastTx={broadcastIcaTx} />
           {/* This section will be used for the interchain transaction component in the future */}
         </div>
       </div>

@@ -64,7 +64,7 @@ export function CosmosMsgBuilder({ index, setCosmosMsg, deleteCosmosMsg }: Cosmo
   }
 
   return (
-    <div className="relative p-4 border border-gray-300 rounded">
+    <div className="bg-gray-100 relative p-4 border border-gray-300 rounded">
       {/* Close (X) Button */}
       <button
         onClick={deleteMsg}
@@ -117,7 +117,7 @@ const VoteMsgBuilder = ({ setMsg }: BuilderProps): JSX.Element => {
           id="proposalId"
           value={proposalId}
           onChange={handleProposalIdChange}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded shadow-sm"
+          className="mt-1 block w-full p-2 border border-gray-300 rounded shadow-sm bg-gray-50"
         />
       </div>
       <div className="mb-4">

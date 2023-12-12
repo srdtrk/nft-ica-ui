@@ -40,7 +40,7 @@ const IcaTxBuilder = ({ broadcastTx }: IcaTxBuilderProps): JSX.Element => {
         <CosmosMsgBuilder key={index} index={index} setCosmosMsg={updateMessage} deleteCosmosMsg={deleteMessage} />
       ))}
 
-      <button onClick={addNewMessage} className="mt-4 p-2 bg-blue-500 text-white rounded">
+      <button onClick={addNewMessage} className="mt-4 p-2 bg-blue-500 text-white rounded mr-4">
         Add Msg
       </button>
 
