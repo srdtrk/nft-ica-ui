@@ -1,0 +1,96 @@
+import type { CosmosMsgForEmpty, VoteOption } from '@/contracts/NftIcaCoordinator.types'
+import React, { useState } from 'react'
+import Dropdown from './DrowdownMenu'
+
+interface CosmosMsgBuilderProps {
+  setCosmosMsg: (message: CosmosMsgForEmpty) => void
+}
+
+enum MessageType {
+  Vote = 'Vote',
+  Delegate = 'Delegate',
+  Undelegate = 'Undelegate',
+  Redelegate = 'Redelegate',
+  Send = 'Send',
+}
+
+export interface State {
+  messageType: MessageType
+}
+
+const initialState: State = {
+  messageType: MessageType.Vote,
+}
+
+export function CosmosMsgBuilder({ setCosmosMsg }: CosmosMsgBuilderProps): JSX.Element {
+  const [state, setState] = useState(initialState)
+
+  const messageTypes: MessageType[] = Object.values(MessageType)
+
+  const handleMessageTypeChange = (messageType: string): void => {
+    setState({ ...state, messageType: messageType as MessageType })
+  }
+
+  // Render the appropriate message builder based on the message type
+  const renderMessageBuilder = (): JSX.Element | null => {
+    switch (state.messageType) {
+      case MessageType.Vote:
+        return <VoteMsgBuilder setCosmosMsg={setCosmosMsg} />
+      // Add cases for other message types here...
+      default:
+        return null
+    }
+  }
+
+  return (
+    <div>
+      <div className="mb-4">
+        <label htmlFor="messageType" className="block text-sm font-medium text-gray-700">
+          Message Type
+        </label>
+        <Dropdown options={messageTypes} onSelect={handleMessageTypeChange} />
+      </div>
+      {renderMessageBuilder()}
+    </div>
+  )
+}
+
+const VoteMsgBuilder = ({ setCosmosMsg }: CosmosMsgBuilderProps): JSX.Element => {
+  const [proposalId, setProposalId] = useState<number>(1)
+  const [vote, setVote] = useState<VoteOption>('yes')
+
+  const handleProposalIdChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const proposalId = parseInt(event.target.value, 10)
+    setProposalId(proposalId)
+    setCosmosMsg({ gov: { vote: { proposal_id: proposalId, vote } } })
+  }
+
+  const handleVoteSelect = (selectedVote: string): void => {
+    const vote = selectedVote as VoteOption
+    setVote(vote)
+    setCosmosMsg({ gov: { vote: { proposal_id: proposalId, vote } } })
+  }
+
+  return (
+    <div className="p-4 border border-gray-300 rounded">
+      <div className="mb-4">
+        <label htmlFor="proposalId" className="block text-sm font-medium text-gray-700">
+          Proposal ID
+        </label>
+        <input
+          type="number"
+          id="proposalId"
+          value={proposalId}
+          onChange={handleProposalIdChange}
+          className="mt-1 block w-full p-2 border border-gray-300 rounded shadow-sm"
+        />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="voteOption" className="block text-sm font-medium text-gray-700">
+          Vote Option
+        </label>
+        <Dropdown options={['yes', 'no', 'abstain', 'no_with_veto']} onSelect={handleVoteSelect} />
+      </div>
+    </div>
+  )
+}
