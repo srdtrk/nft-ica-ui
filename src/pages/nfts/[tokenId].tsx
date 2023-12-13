@@ -27,9 +27,6 @@ const NftDetail = (): JSX.Element => {
     return <div>Invalid URL</div>
   }
 
-  // Generate SVG string
-  const svgString = toSvg(icaAddress, 140)
-
   // Function to navigate back to the NFTs list
   const goBack = (): void => {
     void router.push('/')
@@ -59,24 +56,7 @@ const NftDetail = (): JSX.Element => {
       {/* Main Content */}
       <div className="flex p-4">
         {/* Left Section: NFT Details */}
-        <div className="flex-1 flex">
-          <div className="flex-none" dangerouslySetInnerHTML={{ __html: svgString }} />
-          <div>
-            <h2 className="text-3xl font-bold">{tokenId}</h2>
-            <p className="text-lg mt-2">
-              <span className="font-bold text-xl">ICA Address:</span> {icaAddress}
-            </p>
-            <a
-              href={`https://www.mintscan.io/cosmoshub-testnet/address/${icaAddress}`}
-              className="text-blue-500 font-bold text-lg"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View on Mintscan
-            </a>
-          </div>
-          {/* Additional details can be added here in the future */}
-        </div>
+        <TokenCard tokenId={tokenId} icaAddress={icaAddress} />
 
         {/* Right Section: Placeholder for Interchain Transaction Component */}
         <div className="flex-1">
@@ -84,6 +64,36 @@ const NftDetail = (): JSX.Element => {
           <IcaTxBuilder broadcastTx={broadcastIcaTx} />
           {/* This section will be used for the interchain transaction component in the future */}
         </div>
+      </div>
+    </div>
+  )
+}
+
+interface TokenCardProps {
+  tokenId: string
+  icaAddress: string
+}
+
+const TokenCard = ({ tokenId, icaAddress }: TokenCardProps): JSX.Element => {
+  // Generate SVG string
+  const svgString = toSvg(icaAddress, 140)
+
+  return (
+    <div className="flex-1 flex">
+      <div className="flex-none" dangerouslySetInnerHTML={{ __html: svgString }} />
+      <div>
+        <h2 className="text-3xl font-bold">{tokenId}</h2>
+        <p className="text-lg mt-2">
+          <span className="font-bold text-xl">ICA Address:</span> {icaAddress}
+        </p>
+        <a
+          href={`https://www.mintscan.io/cosmoshub-testnet/address/${icaAddress}`}
+          className="text-blue-500 font-bold text-lg"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          View on Mintscan
+        </a>
       </div>
     </div>
   )

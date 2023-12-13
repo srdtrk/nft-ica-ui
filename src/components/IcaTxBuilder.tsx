@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CosmosMsgBuilder } from './CosmosMsgBuilder' // Adjust the import path as needed
 import type { CosmosMsgForEmpty } from '@/contracts/NftIcaCoordinator.types'
 import type { TxResponse } from '@injectivelabs/sdk-ts'
@@ -26,6 +26,11 @@ const IcaTxBuilder = ({ broadcastTx }: IcaTxBuilderProps): JSX.Element => {
     const newMessages = messages.filter((_, msgIndex) => msgIndex !== index)
     setMessages(newMessages)
   }
+
+  // Add a new message on component mount
+  useEffect(() => {
+    addNewMessage()
+  }, [])
 
   const handleBroadcast = (): void => {
     if (messages.length === 0) {
