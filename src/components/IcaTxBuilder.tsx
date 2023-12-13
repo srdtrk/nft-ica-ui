@@ -34,7 +34,7 @@ const IcaTxBuilder = ({ broadcastTx }: IcaTxBuilderProps): JSX.Element => {
     }
     void broadcastTx(messages).then(() => {
       setMessages([])
-    })
+    }, alert)
   }
 
   return (
