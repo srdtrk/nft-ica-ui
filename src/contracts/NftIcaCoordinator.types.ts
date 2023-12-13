@@ -303,6 +303,12 @@ export type QueryMsg = {
 } | {
   get_mint_queue: {};
 } | {
+  get_transaction_history: {
+    page?: number | null;
+    page_size?: number | null;
+    token_id: string;
+  };
+} | {
   ownership: {};
 };
 export interface ContractState {
@@ -321,6 +327,17 @@ export interface NftIcaPair {
 export type ArrayOfQueueItem = QueueItem[];
 export interface QueueItem {
   owner: string;
+  token_id: string;
+}
+export type TransactionMsgType = "empty" | "custom" | "send" | "ibc" | "vote" | "wasm" | "delegate" | "undelegate" | "redelegate" | "stargate" | "distribution" | "multi_msg" | "unknown";
+export type TransactionStatus = "pending" | "completed" | "failed" | "timeout";
+export type ArrayOfTransactionRecord = TransactionRecord[];
+export interface TransactionRecord {
+  block_height: number;
+  msg_type: TransactionMsgType;
+  owner: string;
+  status: TransactionStatus;
+  timestamp: number;
   token_id: string;
 }
 export interface OwnershipForString {
