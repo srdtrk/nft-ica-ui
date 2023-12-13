@@ -238,7 +238,7 @@ const DelegateMsgBuilder = ({ setMsg }: DelegateMsgBuilderProps): JSX.Element =>
   return (
     <div className="p-4 border border-gray-300 rounded">
       <AmountSelector
-        index={0}
+        index={-1}
         setAmount={handleAmountChange}
         onDelete={() => {}} // No delete functionality needed here
       />
@@ -280,7 +280,7 @@ const UndelegateMsgBuilder = ({ setMsg }: UndelegateMsgBuilderProps): JSX.Elemen
   return (
     <div className="p-4 border border-gray-300 rounded">
       <AmountSelector
-        index={0}
+        index={-1}
         setAmount={handleAmountChange}
         onDelete={() => {}} // No delete functionality needed here
       />
@@ -329,7 +329,7 @@ const RedelegateMsgBuilder = ({ setMsg }: RedelegateMsgBuilderProps): JSX.Elemen
   return (
     <div className="p-4 border border-gray-300 rounded">
       <AmountSelector
-        index={0}
+        index={-1}
         setAmount={handleAmountChange}
         onDelete={() => {}} // No delete functionality needed here
       />

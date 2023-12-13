@@ -53,9 +53,11 @@ const AmountSelector = ({ index, setAmount, onDelete }: AmountSelectorProps): JS
           handleDenomChange(e.target.value)
         }}
       />
-      <button onClick={deleteAmount} className="p-1 text-red-500">
-        <FontAwesomeIcon icon={faTimes} />
-      </button>
+      {index > -1 && ( // only show delete button if index is non-negative
+        <button onClick={deleteAmount} className="p-1 text-red-500">
+          <FontAwesomeIcon icon={faTimes} />
+        </button>
+      )}
     </div>
   )
 }
