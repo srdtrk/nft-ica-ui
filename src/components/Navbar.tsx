@@ -17,7 +17,7 @@ const Navbar = (): JSX.Element => {
             onClick={() => {
               navigateTo('/')
             }}
-            className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded mx-1"
+            className="font-bold py-2 px-4 rounded mx-1 border-solid border-2 border-black hover:border-gray-500 hover:bg-gray-200 hover:text-gray-500"
           >
             NFT ICA App
           </button>
@@ -25,7 +25,7 @@ const Navbar = (): JSX.Element => {
             onClick={() => {
               navigateTo('/Console')
             }}
-            className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded mx-1"
+            className="font-bold py-2 px-4 rounded mx-1 border-solid border-2 border-black hover:border-gray-500 hover:bg-gray-200 hover:text-gray-500"
           >
             Console
           </button>
