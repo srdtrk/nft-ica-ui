@@ -88,6 +88,10 @@ export type CosmosMsgForEmpty = {
 } | {
   custom: Empty;
 } | {
+  staking: StakingMsg;
+} | {
+  distribution: DistributionMsg;
+} | {
   stargate: {
     type_url: string;
     value: Binary;
@@ -113,6 +117,37 @@ export type BankMsg = {
   };
 };
 export type Uint128 = string;
+export type StakingMsg = {
+  delegate: {
+    amount: Coin;
+    validator: string;
+    [k: string]: unknown;
+  };
+} | {
+  undelegate: {
+    amount: Coin;
+    validator: string;
+    [k: string]: unknown;
+  };
+} | {
+  redelegate: {
+    amount: Coin;
+    dst_validator: string;
+    src_validator: string;
+    [k: string]: unknown;
+  };
+};
+export type DistributionMsg = {
+  set_withdraw_address: {
+    address: string;
+    [k: string]: unknown;
+  };
+} | {
+  withdraw_delegator_reward: {
+    validator: string;
+    [k: string]: unknown;
+  };
+};
 export type IbcMsg = {
   transfer: {
     amount: Coin;
