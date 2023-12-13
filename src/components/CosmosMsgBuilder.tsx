@@ -35,6 +35,9 @@ const defaultDelegateMsg: CosmosMsgForEmpty = {
 const defaultUndelegateMsg: CosmosMsgForEmpty = {
   staking: { undelegate: { amount: { denom: '', amount: '' }, validator: '' } },
 }
+const defaultRedelegateMsg: CosmosMsgForEmpty = {
+  staking: { redelegate: { amount: { denom: '', amount: '' }, src_validator: '', dst_validator: '' } },
+}
 
 export function CosmosMsgBuilder({ index, setCosmosMsg, deleteCosmosMsg }: CosmosMsgBuilderProps): JSX.Element {
   const [state, setState] = useState(initialState)
@@ -54,6 +57,9 @@ export function CosmosMsgBuilder({ index, setCosmosMsg, deleteCosmosMsg }: Cosmo
         break
       case MessageType.Undelegate:
         setMsg(defaultUndelegateMsg)
+        break
+      case MessageType.Redelegate:
+        setMsg(defaultRedelegateMsg)
         break
       // Add cases for other message types here...
       default:
@@ -82,6 +88,8 @@ export function CosmosMsgBuilder({ index, setCosmosMsg, deleteCosmosMsg }: Cosmo
         return <DelegateMsgBuilder setMsg={setMsg} />
       case MessageType.Undelegate:
         return <UndelegateMsgBuilder setMsg={setMsg} />
+      case MessageType.Redelegate:
+        return <RedelegateMsgBuilder setMsg={setMsg} />
       default:
         return null
     }
@@ -285,6 +293,65 @@ const UndelegateMsgBuilder = ({ setMsg }: UndelegateMsgBuilderProps): JSX.Elemen
           id="validator"
           value={validator}
           onChange={handleValidatorChange}
+          className="mt-1 block w-full p-2 border border-gray-300 rounded shadow-sm bg-gray-50"
+        />
+      </div>
+    </div>
+  )
+}
+
+interface RedelegateMsgBuilderProps {
+  setMsg: (message: CosmosMsgForEmpty) => void
+}
+
+const RedelegateMsgBuilder = ({ setMsg }: RedelegateMsgBuilderProps): JSX.Element => {
+  const [amount, setAmount] = useState<Coin>({ denom: '', amount: '' })
+  const [srcValidator, setSrcValidator] = useState<string>('')
+  const [dstValidator, setDstValidator] = useState<string>('')
+
+  const handleAmountChange = (_: number, newAmount: Coin): void => {
+    setAmount(newAmount)
+    setMsg({ staking: { redelegate: { amount: newAmount, src_validator: srcValidator, dst_validator: dstValidator } } })
+  }
+
+  const handleSrcValidatorChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const newValidator = event.target.value
+    setSrcValidator(newValidator)
+    setMsg({ staking: { redelegate: { amount, src_validator: newValidator, dst_validator: dstValidator } } })
+  }
+
+  const handleDstValidatorChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const newValidator = event.target.value
+    setDstValidator(newValidator)
+    setMsg({ staking: { redelegate: { amount, src_validator: srcValidator, dst_validator: newValidator } } })
+  }
+
+  return (
+    <div className="p-4 border border-gray-300 rounded">
+      <AmountSelector
+        index={0}
+        setAmount={handleAmountChange}
+        onDelete={() => {}} // No delete functionality needed here
+      />
+      <div className="mt-4">
+        <label htmlFor="src_validator" className="block text-sm font-medium text-gray-700">
+          Source Validator
+        </label>
+        <input
+          type="text"
+          id="src_validator"
+          value={srcValidator}
+          onChange={handleSrcValidatorChange}
+          className="mt-1 block w-full p-2 border border-gray-300 rounded shadow-sm bg-gray-50"
+        />
+        <label htmlFor="dst_validator" className="block text-sm font-medium text-gray-700">
+          Destination Validator
+        </label>
+        <input
+          type="text"
+          id="dst_validator"
+          value={dstValidator}
+          onChange={handleDstValidatorChange}
           className="mt-1 block w-full p-2 border border-gray-300 rounded shadow-sm bg-gray-50"
         />
       </div>
