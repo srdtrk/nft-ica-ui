@@ -32,6 +32,9 @@ const defaultSendMsg: CosmosMsgForEmpty = { bank: { send: { amount: [], to_addre
 const defaultDelegateMsg: CosmosMsgForEmpty = {
   staking: { delegate: { amount: { denom: '', amount: '' }, validator: '' } },
 }
+const defaultUndelegateMsg: CosmosMsgForEmpty = {
+  staking: { undelegate: { amount: { denom: '', amount: '' }, validator: '' } },
+}
 
 export function CosmosMsgBuilder({ index, setCosmosMsg, deleteCosmosMsg }: CosmosMsgBuilderProps): JSX.Element {
   const [state, setState] = useState(initialState)
@@ -48,6 +51,9 @@ export function CosmosMsgBuilder({ index, setCosmosMsg, deleteCosmosMsg }: Cosmo
         break
       case MessageType.Delegate:
         setMsg(defaultDelegateMsg)
+        break
+      case MessageType.Undelegate:
+        setMsg(defaultUndelegateMsg)
         break
       // Add cases for other message types here...
       default:
@@ -74,6 +80,8 @@ export function CosmosMsgBuilder({ index, setCosmosMsg, deleteCosmosMsg }: Cosmo
         return <SendMsgBuilder setMsg={setMsg} />
       case MessageType.Delegate:
         return <DelegateMsgBuilder setMsg={setMsg} />
+      case MessageType.Undelegate:
+        return <UndelegateMsgBuilder setMsg={setMsg} />
       default:
         return null
     }
@@ -217,6 +225,48 @@ const DelegateMsgBuilder = ({ setMsg }: DelegateMsgBuilderProps): JSX.Element =>
     const newValidator = event.target.value
     setValidator(newValidator)
     setMsg({ staking: { delegate: { amount, validator: newValidator } } })
+  }
+
+  return (
+    <div className="p-4 border border-gray-300 rounded">
+      <AmountSelector
+        index={0}
+        setAmount={handleAmountChange}
+        onDelete={() => {}} // No delete functionality needed here
+      />
+      <div className="mt-4">
+        <label htmlFor="validator" className="block text-sm font-medium text-gray-700">
+          Validator
+        </label>
+        <input
+          type="text"
+          id="validator"
+          value={validator}
+          onChange={handleValidatorChange}
+          className="mt-1 block w-full p-2 border border-gray-300 rounded shadow-sm bg-gray-50"
+        />
+      </div>
+    </div>
+  )
+}
+
+interface UndelegateMsgBuilderProps {
+  setMsg: (message: CosmosMsgForEmpty) => void
+}
+
+const UndelegateMsgBuilder = ({ setMsg }: UndelegateMsgBuilderProps): JSX.Element => {
+  const [amount, setAmount] = useState<Coin>({ denom: '', amount: '' })
+  const [validator, setValidator] = useState<string>('')
+
+  const handleAmountChange = (_: number, newAmount: Coin): void => {
+    setAmount(newAmount)
+    setMsg({ staking: { undelegate: { amount: newAmount, validator } } })
+  }
+
+  const handleValidatorChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const newValidator = event.target.value
+    setValidator(newValidator)
+    setMsg({ staking: { undelegate: { amount, validator: newValidator } } })
   }
 
   return (
