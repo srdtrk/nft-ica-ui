@@ -10,7 +10,7 @@ const Navbar = (): JSX.Element => {
   }
 
   return (
-    <div className="bg-gray-100">
+    <div className="bg-gray-100 shadow-md">
       <div className="container mx-auto flex justify-between items-center p-2">
         <div>
           <button

@@ -54,12 +54,14 @@ const NftDetail = (): JSX.Element => {
       </div>
 
       {/* Main Content */}
-      <div className="flex p-4">
+      <div className="flex flex-none p-4">
         {/* Left Section: NFT Details */}
-        <TokenCard tokenId={tokenId} icaAddress={icaAddress} />
+        <div className="basis-1/2">
+          <TokenCard tokenId={tokenId} icaAddress={icaAddress} />
+        </div>
 
         {/* Right Section: Placeholder for Interchain Transaction Component */}
-        <div className="flex-1">
+        <div className="basis-1/2">
           <h2 className="text-3xl font-bold">Interchain Transaction Builder</h2>
           <IcaTxBuilder broadcastTx={broadcastIcaTx} />
           {/* This section will be used for the interchain transaction component in the future */}
@@ -80,20 +82,23 @@ const TokenCard = ({ tokenId, icaAddress }: TokenCardProps): JSX.Element => {
 
   return (
     <div className="flex-1 flex">
-      <div className="flex-none" dangerouslySetInnerHTML={{ __html: svgString }} />
-      <div>
-        <h2 className="text-3xl font-bold">{tokenId}</h2>
-        <p className="text-lg mt-2">
-          <span className="font-bold text-xl">ICA Address:</span> {icaAddress}
-        </p>
-        <a
-          href={`https://www.mintscan.io/cosmoshub-testnet/address/${icaAddress}`}
-          className="text-blue-500 font-bold text-lg"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          View on Mintscan
-        </a>
+      <div className="flex bg-gray-50 p-4 rounded">
+        <div className="flex-none" dangerouslySetInnerHTML={{ __html: svgString }} />
+        <div className="mt-2">
+          <h2 className="text-3xl font-bold">
+            Token ID: <span className="text-2xl">{tokenId}</span>{' '}
+          </h2>
+          <p className="text-xl font-bold"> ICA Address:</p>
+          <p className="text-lg">{icaAddress}</p>
+          <a
+            href={`https://www.mintscan.io/cosmoshub-testnet/address/${icaAddress}`}
+            className="text-blue-500 font-bold text-lg"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View on Mintscan
+          </a>
+        </div>
       </div>
     </div>
   )
