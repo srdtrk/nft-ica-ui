@@ -34,16 +34,29 @@ function Nfts(): JSX.Element {
   }
 
   return (
-    <div className="p-6">
+    <div className="relative p-6 pb-20">
+      {' '}
+      {/* Added pb-20 to give space for the fixed bar */}
       {userWaitingNftIds.length > 0 && <MintingList mintingNfts={userWaitingNftIds.map((nft) => nft.token_id)} />}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
-        {userNfts.map((info, index) => (
-          <NftCard key={index} id={info.nft_id} icaAddress={info.ica_address} /> // Update the image URL path as needed
-        ))}
+      {userNfts.length === 0 ? (
+        <div className="flex justify-center items-center h-screen">
+          <p className="text-gray-500">You do not have any Interchain Account NFTs yet.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+          {userNfts.map((info, index) => (
+            <NftCard key={index} id={info.nft_id} icaAddress={info.ica_address} />
+          ))}
+        </div>
+      )}
+      <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-md justify-center flex">
+        <button
+          onClick={handleMintNft}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Mint an Interchain Account NFT
+        </button>
       </div>
-      <button onClick={handleMintNft} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        Mint NFT
-      </button>
     </div>
   )
 }
