@@ -10,7 +10,11 @@ import {
 } from '@injectivelabs/sdk-ts'
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { useWalletStore } from './WalletContextProvider'
-import type { QueryMsg as Cw721QueryMsg, TokensResponse } from '@/contracts/Cw721IcaExtension.types'
+import type {
+  QueryMsg as Cw721QueryMsg,
+  ExecuteMsg as Cw721ExecuteMsg,
+  TokensResponse,
+} from '@/contracts/Cw721IcaExtension.types'
 import type {
   ArrayOfQueueItem,
   ExecuteMsg as CoordinatorExecuteMsg,
@@ -36,6 +40,7 @@ interface StoreState {
   userWaitingNftIds: QueueItem[]
   mint: () => Promise<TxResponse | undefined>
   executeIcaMsg: (tokenId: string, msg: IcaExecuteMsg) => Promise<TxResponse | undefined>
+  transferNft: (tokenId: string, recepient: string) => Promise<TxResponse | undefined>
   getTxHistory: (
     tokenId: string,
     page?: number,
@@ -52,6 +57,10 @@ const NftIcaContext = createContext<StoreState>({
     return {} as TxResponse
   },
   executeIcaMsg: async () => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    return {} as TxResponse
+  },
+  transferNft: async () => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return {} as TxResponse
   },
@@ -116,7 +125,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
   }
 
   async function executeIcaMsg(tokenId: string, msg: IcaExecuteMsg): Promise<TxResponse | undefined> {
-    const executeMsg = {
+    const executeMsg: CoordinatorExecuteMsg = {
       execute_ica_msg: {
         token_id: tokenId,
         msg,
@@ -126,10 +135,20 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
     return await executeContract(NFT_ICA_CONTRACT_ADDRESS, executeMsg)
   }
 
+  async function transferNft(tokenId: string, recipient: string): Promise<TxResponse | undefined> {
+    const executeMsg: Cw721ExecuteMsg = {
+      transfer_nft: {
+        recipient,
+        token_id: tokenId,
+      },
+    }
+
+    return await executeContract(CW721_CONTRACT_ADDRESS, executeMsg)
+  }
+
   async function fetchNftIds(): Promise<void> {
     if (injectiveAddress === '') {
       stopInterval()
-      console.log('fetchNftIds: No Wallet Connected')
       alert('No Wallet Connected')
       return
     }
@@ -247,6 +266,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
         userWaitingNftIds,
         mint,
         executeIcaMsg,
+        transferNft,
         getTxHistory,
         isLoading,
       }}

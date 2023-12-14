@@ -23,7 +23,7 @@ const NftDetail = (): JSX.Element => {
 
   const [refreshTxHistory, setRefreshTxHistory] = useState(false)
 
-  const { executeIcaMsg } = useNftIcaStore()
+  const { executeIcaMsg, transferNft } = useNftIcaStore()
 
   // Check if tokenId and icaAddress are valid strings
   if (typeof tokenId !== 'string' || typeof icaAddress !== 'string') {
@@ -33,6 +33,16 @@ const NftDetail = (): JSX.Element => {
   // Function to navigate back to the NFTs list
   const goBack = (): void => {
     void router.push('/')
+  }
+
+  const handleTransferNft = async (tokenId: string, recipient: string): Promise<TxResponse | undefined> => {
+    const resp = await transferNft(tokenId, recipient)
+
+    if (resp !== undefined) {
+      goBack()
+    }
+
+    return resp
   }
 
   const broadcastIcaTx = async (messages: CosmosMsgForEmpty[]): Promise<TxResponse | undefined> => {
@@ -63,7 +73,7 @@ const NftDetail = (): JSX.Element => {
       <div className="flex flex-wrap p-4">
         {/* Left Section: NFT Details */}
         <div className="basis-1/2">
-          <TokenCard tokenId={tokenId} icaAddress={icaAddress} />
+          <TokenCard tokenId={tokenId} icaAddress={icaAddress} transferNft={handleTransferNft} />
           <TransactionHistory tokenId={tokenId} refreshTrigger={refreshTxHistory} className="mt-5 w-5/6" />
         </div>
 
@@ -80,32 +90,78 @@ const NftDetail = (): JSX.Element => {
 
 interface TokenCardProps {
   tokenId: string
+  transferNft: (tokenId: string, recipient: string) => Promise<TxResponse | undefined>
   icaAddress: string
 }
 
-const TokenCard = ({ tokenId, icaAddress }: TokenCardProps): JSX.Element => {
+const TokenCard = ({ tokenId, icaAddress, transferNft }: TokenCardProps): JSX.Element => {
   // Generate SVG string
   const svgString = toSvg(icaAddress, 140)
 
   return (
     <div className="flex-1 flex">
-      <div className="flex bg-gray-50 p-4 rounded">
+      <div className="flex bg-gray-50 p-4 rounded relative">
+        <div className="absolute top-0 right-0 bg-blue-100 text-blue-800 text-2sm px-2 py-1 rounded-bl-lg">
+          cosmoshub-testnet
+        </div>
+
         <div className="flex-none" dangerouslySetInnerHTML={{ __html: svgString }} />
         <div className="mt-2">
-          <h2 className="text-3xl font-bold">
-            Token ID: <span className="text-2xl">{tokenId}</span>{' '}
+          <h2 className="text-2xl font-bold">
+            Token ID: <span className="text-xl">{tokenId}</span>{' '}
           </h2>
-          <p className="text-xl font-bold"> ICA Address:</p>
-          <p className="text-lg">{icaAddress}</p>
+          <p className="text-lg font-bold mt-2"> ICA Address:</p>
+          <p className="text-2sm">{icaAddress}</p>
           <a
             href={`https://www.mintscan.io/cosmoshub-testnet/address/${icaAddress}`}
-            className="text-blue-500 font-bold text-lg"
+            className="text-blue-500 font-bold text-lg mt-1"
             target="_blank"
             rel="noopener noreferrer"
           >
             View on Mintscan
           </a>
+          <TransferNft tokenId={tokenId} transferNft={transferNft} className="flex-none mt-5" />
         </div>
+      </div>
+    </div>
+  )
+}
+
+interface TransferNftProps {
+  tokenId: string
+  transferNft: (tokenId: string, recipient: string) => Promise<TxResponse | undefined>
+  className?: string
+}
+
+const TransferNft = ({ tokenId, transferNft, className }: TransferNftProps): JSX.Element => {
+  const [recipient, setRecipient] = useState('')
+
+  const handleTransfer = (): void => {
+    if (recipient !== '') {
+      void transferNft(tokenId, recipient).then(() => {
+        setRecipient('')
+      }, alert)
+    }
+  }
+
+  return (
+    <div className={className}>
+      <div className="flex items-center">
+        <input
+          type="text"
+          value={recipient}
+          onChange={(e) => {
+            setRecipient(e.target.value)
+          }}
+          placeholder="Recipient Address"
+          className="p-2 w-96 border border-gray-300 rounded mr-2"
+        />
+        <button
+          onClick={handleTransfer}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Transfer NFT
+        </button>
       </div>
     </div>
   )

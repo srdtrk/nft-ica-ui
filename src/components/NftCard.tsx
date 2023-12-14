@@ -26,13 +26,17 @@ const NftCard: React.FC<NftCardProps> = ({ id, icaAddress }) => {
 
   return (
     <div
-      className="max-w-sm rounded overflow-hidden shadow-lg bg-white hover:bg-gray-100"
+      className="max-w-sm rounded overflow-hidden shadow-lg bg-white hover:bg-gray-100 relative"
       onClick={handleClick}
       onKeyDown={handleKeyPress}
       role="button" // Role added for accessibility
       tabIndex={0} // Makes the div focusable
       aria-label={`NFT Card for ${id}`} // Aria-label for screen readers
     >
+      <div className="absolute top-0 right-0 bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-bl-lg">
+        cosmoshub-testnet
+      </div>
+
       <div className="w-full" dangerouslySetInnerHTML={{ __html: svgString }} />
       <div className="px-6 py-4">
         <div className="font-bold text-xl mb-2">NFT ID: {id}</div>
@@ -43,6 +47,9 @@ const NftCard: React.FC<NftCardProps> = ({ id, icaAddress }) => {
             href={`https://www.mintscan.io/cosmoshub-testnet/address/${icaAddress}`}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={(e) => {
+              e.stopPropagation()
+            }}
           >
             <FontAwesomeIcon icon={faExternalLinkAlt} className="ml-2" />
           </a>
