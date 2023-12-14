@@ -79,7 +79,6 @@ const NftDetail = (): JSX.Element => {
 
         {/* Right Section: Placeholder for Interchain Transaction Component */}
         <div className="basis-1/2">
-          <h2 className="text-3xl font-bold">Interchain Transaction Builder</h2>
           <IcaTxBuilder broadcastTx={broadcastIcaTx} />
           {/* This section will be used for the interchain transaction component in the future */}
         </div>

@@ -43,21 +43,62 @@ const IcaTxBuilder = ({ broadcastTx }: IcaTxBuilderProps): JSX.Element => {
   }
 
   return (
-    <div>
-      {/* Render each CosmosMsgBuilder */}
-      {messages.map((_, index) => (
-        <CosmosMsgBuilder key={index} index={index} setCosmosMsg={updateMessage} deleteCosmosMsg={deleteMessage} />
-      ))}
+    <div className="bg-gray-50 p-4 shadow rounded-lg">
+      <h2 className="text-3xl font-bold mb-4">Atomic Interchain Transaction Builder</h2>
 
-      <button onClick={addNewMessage} className="mt-4 p-2 bg-blue-500 text-white rounded mr-4">
-        Add Msg
-      </button>
+      {/* Scrollable Container for Messages */}
+      <div className="overflow-auto mb-4 border border-gray-300 rounded bg-zinc-200" style={{ height: '70vh' }}>
+        {messages.length > 0 ? (
+          messages.map((_, index) => (
+            <div key={index} className="p-2 pr-3 pl-3 rounded">
+              <CosmosMsgBuilder index={index} setCosmosMsg={updateMessage} deleteCosmosMsg={deleteMessage} />
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-gray-500">No messages added.</p>
+        )}
+      </div>
 
-      <button onClick={handleBroadcast} className="mt-4 p-2 bg-green-500 text-white rounded">
-        Broadcast
-      </button>
+      <div className="flex justify-start">
+        <button onClick={addNewMessage} className="p-2 bg-blue-500 text-white rounded mr-4">
+          Add Msg
+        </button>
+
+        <button onClick={handleBroadcast} className="p-2 bg-green-500 text-white rounded">
+          Broadcast
+        </button>
+      </div>
     </div>
   )
+
+  // return (
+  //   <div>
+  //     <h2 className="text-3xl font-bold">Interchain Transaction Builder</h2>
+  //
+  //     {/* Scrollable Container for Messages */}
+  //     <div className="overflow-auto my-4 border border-gray-300 rounded" style={{ height: '75vh' }}>
+  //       {messages.map((_, index) => (
+  //         <CosmosMsgBuilder
+  //           key={index}
+  //           index={index}
+  //           setCosmosMsg={updateMessage}
+  //           deleteCosmosMsg={deleteMessage}
+  //           className="p-2"
+  //         />
+  //       ))}
+  //     </div>
+  //
+  //     <div className="flex justify-start">
+  //       <button onClick={addNewMessage} className="p-2 bg-blue-500 text-white rounded mr-4">
+  //         Add Msg
+  //       </button>
+  //
+  //       <button onClick={handleBroadcast} className="p-2 bg-green-500 text-white rounded">
+  //         Broadcast
+  //       </button>
+  //     </div>
+  //   </div>
+  // )
 }
 
 export default IcaTxBuilder

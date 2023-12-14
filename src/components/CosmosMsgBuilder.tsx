@@ -10,6 +10,7 @@ interface CosmosMsgBuilderProps {
   index: number
   setCosmosMsg: (index: number, message: CosmosMsgForEmpty) => void
   deleteCosmosMsg: (index: number) => void
+  className?: string
 }
 
 enum MessageType {
@@ -39,7 +40,12 @@ const defaultRedelegateMsg: CosmosMsgForEmpty = {
   staking: { redelegate: { amount: { denom: '', amount: '' }, src_validator: '', dst_validator: '' } },
 }
 
-export function CosmosMsgBuilder({ index, setCosmosMsg, deleteCosmosMsg }: CosmosMsgBuilderProps): JSX.Element {
+export function CosmosMsgBuilder({
+  index,
+  setCosmosMsg,
+  deleteCosmosMsg,
+  className,
+}: CosmosMsgBuilderProps): JSX.Element {
   const [state, setState] = useState(initialState)
 
   const messageTypes: MessageType[] = Object.values(MessageType)
@@ -96,24 +102,26 @@ export function CosmosMsgBuilder({ index, setCosmosMsg, deleteCosmosMsg }: Cosmo
   }
 
   return (
-    <div className="bg-gray-100 relative p-4 border border-gray-300 rounded">
-      {/* Close (X) Button */}
-      <button
-        onClick={deleteMsg}
-        className="absolute top-0 right-0 p-2 text-lg font-bold text-gray-500 hover:text-gray-700"
-        aria-label="Close"
-      >
-        <FontAwesomeIcon icon={faTimes} />
-      </button>
+    <div className={className}>
+      <div className="bg-gray-100 relative p-4 border border-gray-300 rounded">
+        {/* Close (X) Button */}
+        <button
+          onClick={deleteMsg}
+          className="absolute top-0 right-0 p-2 text-lg font-bold text-gray-500 hover:text-gray-700"
+          aria-label="Close"
+        >
+          <FontAwesomeIcon icon={faTimes} />
+        </button>
 
-      <div className="mb-4">
-        <label htmlFor="messageType" className="block text-sm font-medium text-gray-700">
-          Message Type
-        </label>
-        <Dropdown options={messageTypes} onSelect={handleMessageTypeChange} />
+        <div className="mb-4">
+          <label htmlFor="messageType" className="block text-sm font-medium text-gray-700">
+            Message Type
+          </label>
+          <Dropdown options={messageTypes} onSelect={handleMessageTypeChange} />
+        </div>
+
+        {renderMessageBuilder()}
       </div>
-
-      {renderMessageBuilder()}
     </div>
   )
 }
