@@ -331,7 +331,10 @@ export interface QueueItem {
 }
 export type TransactionMsgType = "empty" | "custom" | "send" | "ibc" | "vote" | "wasm" | "delegate" | "undelegate" | "redelegate" | "stargate" | "distribution" | "multi_msg" | "unknown";
 export type TransactionStatus = "pending" | "completed" | "failed" | "timeout";
-export type ArrayOfTransactionRecord = TransactionRecord[];
+export interface GetTransactionHistoryResponse {
+  records: TransactionRecord[];
+  total: number;
+}
 export interface TransactionRecord {
   block_height: number;
   msg_type: TransactionMsgType;

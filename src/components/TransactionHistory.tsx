@@ -2,11 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useNftIcaStore } from '@/context/NftIcaContextProvider'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faArrowRight, faTimesCircle, faCheckCircle } from '@fortawesome/free-solid-svg-icons'
-import type {
-  ArrayOfTransactionRecord,
-  TransactionRecord,
-  TransactionStatus,
-} from '@/contracts/NftIcaCoordinator.types'
+import type { TransactionRecord, TransactionStatus } from '@/contracts/NftIcaCoordinator.types'
 
 interface TransactionHistoryProps {
   tokenId: string
@@ -19,16 +15,19 @@ const TransactionHistory = ({ tokenId, className, refreshTrigger }: TransactionH
 
   const { getTxHistory } = useNftIcaStore()
   const [currentPage, setCurrentPage] = useState(0)
-  const [transactions, setTransactions] = useState<ArrayOfTransactionRecord>([])
+  const [maxPage, setMaxPage] = useState(0)
+  const [transactions, setTransactions] = useState<TransactionRecord[]>([])
   const pendingIntervalIdRef = useRef<number | null>(null)
 
   useEffect(fetchTxHistory, [tokenId, currentPage, refreshTrigger])
 
   function fetchTxHistory(): void {
-    void getTxHistory(tokenId, currentPage, pageSize).then((maybeTxs) => {
-      if (maybeTxs !== undefined) {
-        setTransactions(maybeTxs)
-        const isPending = maybeTxs.some((tx) => tx.status === 'pending')
+    void getTxHistory(tokenId, currentPage, pageSize).then((response) => {
+      if (response !== undefined) {
+        setTransactions(response.records)
+        const maxPage = Math.ceil(response.total / pageSize) - 1
+        setMaxPage(maxPage)
+        const isPending = response.records.some((tx) => tx.status === 'pending')
         if (isPending) {
           startInterval()
         } else {
@@ -62,17 +61,25 @@ const TransactionHistory = ({ tokenId, className, refreshTrigger }: TransactionH
   return (
     <div className={className}>
       <h2 className="text-xl font-bold mb-4">Interchain Transaction History</h2>
-      <div className="my-4">
-        {transactions.map((record) => (
-          <TransactionRecordCard key={record.block_height} record={record} />
-        ))}
-      </div>
+      {transactions.length === 0 ? (
+        <div className="flex justify-center items-center">
+          <p className="text-gray-500">You have not made any interchain transactions yet.</p>
+        </div>
+      ) : (
+        <div className="my-4">
+          {transactions.map((record) => (
+            <TransactionRecordCard key={record.block_height} record={record} />
+          ))}
+        </div>
+      )}
       <div className="flex justify-between items-center">
         <button onClick={goToPreviousPage} disabled={currentPage <= 0}>
           <FontAwesomeIcon icon={faArrowLeft} />
         </button>
-        <span>Page {currentPage + 1}</span>
-        <button onClick={goToNextPage}>
+        <span>
+          Page {currentPage + 1} / {maxPage + 1}
+        </span>
+        <button onClick={goToNextPage} disabled={currentPage >= maxPage}>
           <FontAwesomeIcon icon={faArrowRight} />
         </button>
       </div>

@@ -13,18 +13,18 @@ import { useWalletStore } from './WalletContextProvider'
 import type { QueryMsg as Cw721QueryMsg, TokensResponse } from '@/contracts/Cw721IcaExtension.types'
 import type {
   ArrayOfQueueItem,
-  ArrayOfTransactionRecord,
   ExecuteMsg as CoordinatorExecuteMsg,
   QueryMsg as CoordinatorQueryMsg,
   GetIcaAddressesResponse,
+  GetTransactionHistoryResponse,
   NftIcaPair,
   QueueItem,
 } from '@/contracts/NftIcaCoordinator.types'
 
-// const NFT_ICA_CONTRACT_ADDRESS = 'inj10qs4c3qz4skqj2cj8t8qnkdgeut0r6ue5wfkjp'
-// const CW721_CONTRACT_ADDRESS = 'inj1zv7v087ueyslm856vmcds9zpydutwhz50sllhn'
-const NFT_ICA_CONTRACT_ADDRESS = 'inj1t6kw77tc5vagcyatl0gd02veqae9ydeaq0s0qm'
-const CW721_CONTRACT_ADDRESS = 'inj1t5vs28cd3e5r0flwd3d8hlj7ypkk8x0rjajt6q'
+// const NFT_ICA_CONTRACT_ADDRESS = 'inj1t6kw77tc5vagcyatl0gd02veqae9ydeaq0s0qm'
+// const CW721_CONTRACT_ADDRESS = 'inj1t5vs28cd3e5r0flwd3d8hlj7ypkk8x0rjajt6q'
+const NFT_ICA_CONTRACT_ADDRESS = 'inj1mmt8mcw8d50m350r3r7jsralfwc3cp8a85yrrc'
+const CW721_CONTRACT_ADDRESS = 'inj12klzylvx2l3h9y6t5wyyvrd6u6jlpy5gj4rwlr'
 
 enum Status {
   Idle = 'idle',
@@ -36,7 +36,11 @@ interface StoreState {
   userWaitingNftIds: QueueItem[]
   mint: () => Promise<TxResponse | undefined>
   executeIcaMsg: (tokenId: string, msg: IcaExecuteMsg) => Promise<TxResponse | undefined>
-  getTxHistory: (tokenId: string, page?: number, pageSize?: number) => Promise<ArrayOfTransactionRecord | undefined>
+  getTxHistory: (
+    tokenId: string,
+    page?: number,
+    pageSize?: number,
+  ) => Promise<GetTransactionHistoryResponse | undefined>
   isLoading: boolean
 }
 
@@ -53,7 +57,7 @@ const NftIcaContext = createContext<StoreState>({
   },
   getTxHistory: async () => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    return {} as ArrayOfTransactionRecord
+    return {} as GetTransactionHistoryResponse
   },
   isLoading: false,
 })
@@ -98,7 +102,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
     tokenId: string,
     page?: number,
     pageSize?: number,
-  ): Promise<ArrayOfTransactionRecord | undefined> {
+  ): Promise<GetTransactionHistoryResponse | undefined> {
     const msg: CoordinatorQueryMsg = {
       get_transaction_history: {
         token_id: tokenId,
@@ -107,7 +111,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
       },
     }
 
-    const resp = await queryContract<ArrayOfTransactionRecord>(NFT_ICA_CONTRACT_ADDRESS, msg)
+    const resp = await queryContract<GetTransactionHistoryResponse>(NFT_ICA_CONTRACT_ADDRESS, msg)
     return resp
   }
 
