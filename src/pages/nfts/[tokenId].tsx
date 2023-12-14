@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import React from 'react'
+import React, { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { toSvg } from 'jdenticon'
@@ -7,6 +7,7 @@ import NftIcaContextProvider, { useNftIcaStore } from '@/context/NftIcaContextPr
 import type { CosmosMsgForEmpty, ExecuteMsg1 as IcaExecuteMsg } from '@/contracts/NftIcaCoordinator.types'
 import type { TxResponse } from '@injectivelabs/sdk-ts'
 import IcaTxBuilder from '@/components/IcaTxBuilder'
+import TransactionHistory from '@/components/TransactionHistory'
 
 function NftDetailPage(): JSX.Element {
   return (
@@ -19,6 +20,8 @@ function NftDetailPage(): JSX.Element {
 const NftDetail = (): JSX.Element => {
   const router = useRouter()
   const { tokenId, icaAddress } = router.query
+
+  const [refreshTxHistory, setRefreshTxHistory] = useState(false)
 
   const { executeIcaMsg } = useNftIcaStore()
 
@@ -40,6 +43,9 @@ const NftDetail = (): JSX.Element => {
     }
 
     const resp = await executeIcaMsg(tokenId, execMsg)
+
+    setRefreshTxHistory(!refreshTxHistory)
+
     return resp
   }
 
@@ -54,10 +60,11 @@ const NftDetail = (): JSX.Element => {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-none p-4">
+      <div className="flex flex-wrap p-4">
         {/* Left Section: NFT Details */}
         <div className="basis-1/2">
           <TokenCard tokenId={tokenId} icaAddress={icaAddress} />
+          <TransactionHistory tokenId={tokenId} refreshTrigger={refreshTxHistory} className="mt-5 w-5/6" />
         </div>
 
         {/* Right Section: Placeholder for Interchain Transaction Component */}

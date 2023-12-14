@@ -13,6 +13,7 @@ import { useWalletStore } from './WalletContextProvider'
 import type { QueryMsg as Cw721QueryMsg, TokensResponse } from '@/contracts/Cw721IcaExtension.types'
 import type {
   ArrayOfQueueItem,
+  ArrayOfTransactionRecord,
   ExecuteMsg as CoordinatorExecuteMsg,
   QueryMsg as CoordinatorQueryMsg,
   GetIcaAddressesResponse,
@@ -35,6 +36,7 @@ interface StoreState {
   userWaitingNftIds: QueueItem[]
   mint: () => Promise<TxResponse | undefined>
   executeIcaMsg: (tokenId: string, msg: IcaExecuteMsg) => Promise<TxResponse | undefined>
+  getTxHistory: (tokenId: string, page?: number, pageSize?: number) => Promise<ArrayOfTransactionRecord | undefined>
   isLoading: boolean
 }
 
@@ -48,6 +50,10 @@ const NftIcaContext = createContext<StoreState>({
   executeIcaMsg: async () => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return {} as TxResponse
+  },
+  getTxHistory: async () => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    return {} as ArrayOfTransactionRecord
   },
   isLoading: false,
 })
@@ -85,6 +91,23 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
 
     const resp = await executeContract(NFT_ICA_CONTRACT_ADDRESS, msg)
     void fetchWaitingNftIds()
+    return resp
+  }
+
+  async function getTxHistory(
+    tokenId: string,
+    page?: number,
+    pageSize?: number,
+  ): Promise<ArrayOfTransactionRecord | undefined> {
+    const msg: CoordinatorQueryMsg = {
+      get_transaction_history: {
+        token_id: tokenId,
+        page,
+        page_size: pageSize,
+      },
+    }
+
+    const resp = await queryContract<ArrayOfTransactionRecord>(NFT_ICA_CONTRACT_ADDRESS, msg)
     return resp
   }
 
@@ -159,7 +182,6 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
       const intervalId = setInterval(() => {
         void fetchWaitingNftIds()
       }, 5000) as unknown as number
-      console.log('startInterval: ', intervalId)
       waitlistIntervalIdRef.current = intervalId
     }
   }
@@ -167,7 +189,6 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
   function stopInterval(): void {
     if (waitlistIntervalIdRef.current !== null) {
       clearInterval(waitlistIntervalIdRef.current)
-      console.log('stopInterval: ', waitlistIntervalIdRef.current)
       waitlistIntervalIdRef.current = null
     }
   }
@@ -222,6 +243,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
         userWaitingNftIds,
         mint,
         executeIcaMsg,
+        getTxHistory,
         isLoading,
       }}
     >
