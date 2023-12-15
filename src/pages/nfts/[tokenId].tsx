@@ -32,10 +32,6 @@ const NftDetail = (): JSX.Element => {
     return <div>Invalid URL</div>
   }
 
-  useEffect(() => {
-    void getControllerAddress(tokenId).then(setControllerAddress)
-  }, [])
-
   // Function to navigate back to the NFTs list
   const goBack = (): void => {
     void router.push('/')
@@ -79,7 +75,14 @@ const NftDetail = (): JSX.Element => {
       <div className="flex flex-wrap p-4">
         {/* Left Section: NFT Details */}
         <div className="basis-1/2">
-          <TokenCard tokenId={tokenId} icaAddress={icaAddress} transferNft={handleTransferNft} />
+          <TokenCard
+            tokenId={tokenId}
+            icaAddress={icaAddress}
+            transferNft={handleTransferNft}
+            callback={() => {
+              void getControllerAddress(tokenId).then(setControllerAddress)
+            }}
+          />
           {controllerAddress !== undefined && (
             <ChannelStateBar tokenId={tokenId} icaControllerAddress={controllerAddress} />
           )}
@@ -99,12 +102,15 @@ const NftDetail = (): JSX.Element => {
 interface TokenCardProps {
   tokenId: string
   transferNft: (tokenId: string, recipient: string) => Promise<TxResponse | undefined>
+  callback: () => void
   icaAddress: string
 }
 
-const TokenCard = ({ tokenId, icaAddress, transferNft }: TokenCardProps): JSX.Element => {
+const TokenCard = ({ tokenId, icaAddress, transferNft, callback }: TokenCardProps): JSX.Element => {
   // Generate SVG string
   const svgString = toSvg(icaAddress, 140)
+
+  callback()
 
   return (
     <div className="flex-1 flex">
