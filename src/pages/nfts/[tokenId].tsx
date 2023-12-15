@@ -1,7 +1,5 @@
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { toSvg } from 'jdenticon'
 import NftIcaContextProvider, { useNftIcaStore } from '@/context/NftIcaContextProvider'
 import type { CosmosMsgForEmpty, ExecuteMsg1 as IcaExecuteMsg } from '@/contracts/NftIcaCoordinator.types'
@@ -9,6 +7,7 @@ import type { TxResponse } from '@injectivelabs/sdk-ts'
 import IcaTxBuilder from '@/components/IcaTxBuilder'
 import TransactionHistory from '@/components/TransactionHistory'
 import { type ChannelState } from '@/contracts/CwIcaController.types'
+import { useNavbarContext } from '@/context/NavbarContext'
 
 function NftDetailPage(): JSX.Element {
   return (
@@ -25,6 +24,17 @@ const NftDetail = (): JSX.Element => {
   const [refreshTxHistory, setRefreshTxHistory] = useState(false)
   const [controllerAddress, setControllerAddress] = useState<string | undefined>(undefined)
 
+  const { provideBackButton } = useNavbarContext()
+
+  // Function to navigate back to the NFTs list
+  const goBack = (): void => {
+    void router.push('/')
+  }
+
+  useEffect(() => {
+    provideBackButton(goBack)
+  }, [])
+
   const { executeIcaMsg, transferNft, getControllerAddress } = useNftIcaStore()
 
   // Check if tokenId and icaAddress are valid strings
@@ -32,9 +42,9 @@ const NftDetail = (): JSX.Element => {
     return <div>Invalid URL</div>
   }
 
-  // Function to navigate back to the NFTs list
-  const goBack = (): void => {
-    void router.push('/')
+  const onMount = (): void => {
+    // provideBackButton(goBack)
+    void getControllerAddress(tokenId).then(setControllerAddress)
   }
 
   const handleTransferNft = async (tokenId: string, recipient: string): Promise<TxResponse | undefined> => {
@@ -63,26 +73,11 @@ const NftDetail = (): JSX.Element => {
 
   return (
     <div>
-      {/* Navigation Bar */}
-      <div className="bg-gray-100 p-4 shadow-md flex items-center">
-        <button onClick={goBack} className="text-gray-600 hover:text-gray-800 flex items-center">
-          <FontAwesomeIcon icon={faArrowLeft} />
-          <span className="ml-2">Back</span>
-        </button>
-      </div>
-
       {/* Main Content */}
       <div className="flex flex-wrap p-4">
         {/* Left Section: NFT Details */}
         <div className="basis-1/2">
-          <TokenCard
-            tokenId={tokenId}
-            icaAddress={icaAddress}
-            transferNft={handleTransferNft}
-            callback={() => {
-              void getControllerAddress(tokenId).then(setControllerAddress)
-            }}
-          />
+          <TokenCard tokenId={tokenId} icaAddress={icaAddress} transferNft={handleTransferNft} callback={onMount} />
           {controllerAddress !== undefined && (
             <ChannelStateBar tokenId={tokenId} icaControllerAddress={controllerAddress} />
           )}

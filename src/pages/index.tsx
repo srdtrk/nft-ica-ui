@@ -2,6 +2,8 @@ import NftIcaContextProvider, { useNftIcaStore } from '@/context/NftIcaContextPr
 import NftCard from '@/components/NftCard'
 import MintingList from '@/components/MintingList'
 import { useWalletStore } from '@/context/WalletContextProvider'
+import { useEffect } from 'react'
+import { useNavbarContext } from '@/context/NavbarContext'
 // import React, { useEffect, useState } from 'react'
 
 function NftsPage(): JSX.Element {
@@ -15,6 +17,11 @@ function NftsPage(): JSX.Element {
 function Nfts(): JSX.Element {
   const { userNfts, userWaitingNftIds, mint } = useNftIcaStore()
   const { injectiveAddress } = useWalletStore()
+
+  const { hideBackButton } = useNavbarContext()
+  useEffect(() => {
+    hideBackButton()
+  }, [])
 
   const handleMintNft = (): void => {
     void mint()
