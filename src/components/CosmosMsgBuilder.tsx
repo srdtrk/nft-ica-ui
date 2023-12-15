@@ -3,8 +3,12 @@ import React, { useState } from 'react'
 import Dropdown from './DrowdownMenu'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import DateTimePicker from 'react-datetime-picker'
 import { defaultNewMsg } from './IcaTxBuilder'
 import AmountSelector, { defaultNewAmount } from './AmountSelector'
+import 'react-datetime-picker/dist/DateTimePicker.css'
+import 'react-calendar/dist/Calendar.css'
+import 'react-clock/dist/Clock.css'
 
 interface CosmosMsgBuilderProps {
   index: number
@@ -19,6 +23,7 @@ enum MessageType {
   Undelegate = 'Undelegate',
   Redelegate = 'Redelegate',
   Send = 'Send',
+  Transfer = 'IBC Transfer',
 }
 
 export interface State {
@@ -38,6 +43,16 @@ const defaultUndelegateMsg: CosmosMsgForEmpty = {
 }
 const defaultRedelegateMsg: CosmosMsgForEmpty = {
   staking: { redelegate: { amount: { denom: '', amount: '' }, src_validator: '', dst_validator: '' } },
+}
+const defaultIBCTransferMsg: CosmosMsgForEmpty = {
+  ibc: {
+    transfer: {
+      amount: { denom: '', amount: '' },
+      to_address: '',
+      channel_id: '',
+      timeout: { timestamp: null },
+    },
+  },
 }
 
 export function CosmosMsgBuilder({
@@ -66,6 +81,9 @@ export function CosmosMsgBuilder({
         break
       case MessageType.Redelegate:
         setMsg(defaultRedelegateMsg)
+        break
+      case MessageType.Transfer:
+        setMsg(defaultIBCTransferMsg)
         break
       // Add cases for other message types here...
       default:
@@ -96,6 +114,8 @@ export function CosmosMsgBuilder({
         return <UndelegateMsgBuilder setMsg={setMsg} />
       case MessageType.Redelegate:
         return <RedelegateMsgBuilder setMsg={setMsg} />
+      case MessageType.Transfer:
+        return <IBCMsgBuilder setMsg={setMsg} />
       default:
         return null
     }
@@ -362,6 +382,127 @@ const RedelegateMsgBuilder = ({ setMsg }: RedelegateMsgBuilderProps): JSX.Elemen
           onChange={handleDstValidatorChange}
           className="mt-1 block w-full p-2 border border-gray-300 rounded shadow-sm bg-gray-50"
         />
+      </div>
+    </div>
+  )
+}
+
+interface IBCMsgBuilderProps {
+  setMsg: (message: CosmosMsgForEmpty) => void
+}
+
+const IBCMsgBuilder = ({ setMsg }: IBCMsgBuilderProps): JSX.Element => {
+  const [amount, setAmount] = useState<Coin>({ denom: '', amount: '' })
+  const [toAddress, setToAddress] = useState<string>('')
+  const [channelId, setChannelId] = useState<string>('')
+  const [timeout, setTimeout] = useState<Date | null>(new Date())
+
+  // Handle the change in the amount
+  const handleAmountChange = (_: number, newAmount: Coin): void => {
+    setAmount(newAmount)
+
+    const timestamp = timeout !== null ? (timeout.getTime() * 1e6).toString() : null
+    setMsg({
+      ibc: {
+        transfer: {
+          amount: newAmount,
+          to_address: toAddress,
+          channel_id: channelId,
+          timeout: { timestamp },
+        },
+      },
+    })
+  }
+
+  // Handle the change in the recipient address
+  const handleToAddressChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setToAddress(event.target.value)
+
+    const timestamp = timeout !== null ? (timeout.getTime() * 1e6).toString() : null
+    setMsg({
+      ibc: {
+        transfer: {
+          amount,
+          to_address: event.target.value,
+          channel_id: channelId,
+          timeout: { timestamp },
+        },
+      },
+    })
+  }
+
+  // Handle the change in the channel ID
+  const handleChannelIdChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setChannelId(event.target.value)
+
+    const timestamp = timeout !== null ? (timeout.getTime() * 1e6).toString() : null
+    setMsg({
+      ibc: {
+        transfer: {
+          amount,
+          to_address: toAddress,
+          channel_id: event.target.value,
+          timeout: { timestamp },
+        },
+      },
+    })
+  }
+
+  const handleTimeoutChange = (date: Date | null): void => {
+    setTimeout(date)
+    const newTimestamp = date !== null ? (date.getTime() * 1e6).toString() : null
+
+    setMsg({
+      ibc: {
+        transfer: {
+          amount,
+          to_address: toAddress,
+          channel_id: channelId,
+          timeout: { timestamp: newTimestamp },
+        },
+      },
+    })
+  }
+
+  return (
+    <div className="p-4 border border-gray-300 rounded">
+      <AmountSelector
+        index={-1} // Index is -1 because we don't need to delete functionality
+        setAmount={handleAmountChange}
+        onDelete={() => {}}
+      />
+
+      <div className="mt-4">
+        <label htmlFor="toAddress" className="block text-sm font-medium text-gray-700">
+          To Address
+        </label>
+        <input
+          type="text"
+          id="toAddress"
+          value={toAddress}
+          onChange={handleToAddressChange}
+          className="mt-1 block w-full p-2 border border-gray-300 rounded shadow-sm bg-gray-50"
+        />
+      </div>
+
+      <div className="mt-4">
+        <label htmlFor="channelId" className="block text-sm font-medium text-gray-700">
+          Channel ID
+        </label>
+        <input
+          type="text"
+          id="channelId"
+          value={channelId}
+          onChange={handleChannelIdChange}
+          className="mt-1 block w-full p-2 border border-gray-300 rounded shadow-sm bg-gray-50"
+        />
+      </div>
+
+      <div className="mt-4">
+        <label htmlFor="timeout" className="block text-sm font-medium text-gray-700">
+          Timeout
+        </label>
+        <DateTimePicker id="timeout" onChange={handleTimeoutChange} value={timeout} className="mt-1 block w-full" />
       </div>
     </div>
   )
