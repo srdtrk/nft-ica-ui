@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useNftIcaStore } from '@/context/NftIcaContextProvider'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faArrowRight, faTimesCircle, faCheckCircle } from '@fortawesome/free-solid-svg-icons'
-import type { TransactionRecord, TransactionStatus } from '@/contracts/NftIcaCoordinator.types'
+import type { TransactionMsgType, TransactionRecord, TransactionStatus } from '@/contracts/NftIcaCoordinator.types'
 
 interface TransactionHistoryProps {
   tokenId: string
@@ -110,6 +110,37 @@ const getStatusIcon = (status: TransactionStatus): JSX.Element | null => {
   }
 }
 
+const getMessageType = (msgType: TransactionMsgType): string => {
+  switch (msgType) {
+    case 'ibc':
+      return 'IBC Transfer'
+    case 'send':
+      return 'Send'
+    case 'vote':
+      return 'Vote'
+    case 'delegate':
+      return 'Delegate'
+    case 'undelegate':
+      return 'Undelegate'
+    case 'redelegate':
+      return 'Redelegate'
+    case 'multi_msg':
+      return 'Multi Msg'
+    case 'distribution':
+      return 'Distribution'
+    case 'wasm':
+      return 'Wasm'
+    case 'custom':
+      return 'Custom'
+    case 'stargate':
+      return 'Stargate'
+    case 'empty':
+      return 'Empty'
+    default:
+      return 'Unknown'
+  }
+}
+
 const TransactionRecordCard = ({ record }: TransactionRecordCardProps): JSX.Element => {
   const timestampInMilliseconds = record.timestamp / 1000000
 
@@ -117,7 +148,7 @@ const TransactionRecordCard = ({ record }: TransactionRecordCardProps): JSX.Elem
     <div className="flex items-center justify-between bg-white p-3 rounded-lg shadow mb-2">
       <div className="flex items-center w-1/3">
         <div className="w-6 mr-2">{getStatusIcon(record.status)}</div>
-        <div className="truncate">{record.msg_type.charAt(0).toUpperCase() + record.msg_type.slice(1)}</div>
+        <div className="truncate">{getMessageType(record.msg_type)}</div>
       </div>
       <div className="w-1/3 text-center">Block: {record.block_height}</div>
       <div className="w-1/3 text-right">{new Date(timestampInMilliseconds).toLocaleString()}</div>
