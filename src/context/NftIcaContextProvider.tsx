@@ -36,7 +36,7 @@ enum Status {
 }
 
 interface StoreState {
-  userNfts: NftIcaPair[]
+  userNfts: NftIcaPair[] | null
   userWaitingNftIds: QueueItem[]
   mint: () => Promise<TxResponse | undefined>
   executeIcaMsg: (tokenId: string, msg: IcaExecuteMsg) => Promise<TxResponse | undefined>
@@ -50,7 +50,7 @@ interface StoreState {
 }
 
 const NftIcaContext = createContext<StoreState>({
-  userNfts: [],
+  userNfts: null,
   userWaitingNftIds: [],
   mint: async () => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -78,7 +78,7 @@ interface Props {
 }
 
 const NftIcaContextProvider = (props: Props): JSX.Element => {
-  const [userNfts, setUserNfts] = useState<NftIcaPair[]>([])
+  const [userNfts, setUserNfts] = useState<NftIcaPair[] | null>(null)
   const [userWaitingNftIds, setUserWaitingNftIds] = useState<QueueItem[]>([])
   const waitlistIntervalIdRef = useRef<number | null>(null)
   const [status, setStatus] = useState<Status>(Status.Idle)

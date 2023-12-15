@@ -38,7 +38,11 @@ function Nfts(): JSX.Element {
       {' '}
       {/* Added pb-20 to give space for the fixed bar */}
       {userWaitingNftIds.length > 0 && <MintingList mintingNfts={userWaitingNftIds.map((nft) => nft.token_id)} />}
-      {userNfts.length === 0 ? (
+      {userNfts === null ? (
+        <div className="flex justify-center items-center h-screen">
+          <p className="text-gray-500">Loading...</p>
+        </div>
+      ) : userNfts.length === 0 ? (
         <div className="flex justify-center items-center h-screen">
           <p className="text-gray-500">You do not have any Interchain Account NFTs yet.</p>
         </div>

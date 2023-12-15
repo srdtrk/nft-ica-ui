@@ -395,7 +395,10 @@ const IBCMsgBuilder = ({ setMsg }: IBCMsgBuilderProps): JSX.Element => {
   const [amount, setAmount] = useState<Coin>({ denom: '', amount: '' })
   const [toAddress, setToAddress] = useState<string>('')
   const [channelId, setChannelId] = useState<string>('')
-  const [timeout, setTimeout] = useState<Date | null>(new Date())
+  // add 10 minutes to the current time
+  const date = new Date()
+  date.setMinutes(date.getMinutes() + 10)
+  const [timeout, setTimeout] = useState<Date | null>(date)
 
   // Handle the change in the amount
   const handleAmountChange = (_: number, newAmount: Coin): void => {

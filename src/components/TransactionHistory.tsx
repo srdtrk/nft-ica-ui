@@ -16,7 +16,7 @@ const TransactionHistory = ({ tokenId, className, refreshTrigger }: TransactionH
   const { getTxHistory } = useNftIcaStore()
   const [currentPage, setCurrentPage] = useState(0)
   const [maxPage, setMaxPage] = useState(0)
-  const [transactions, setTransactions] = useState<TransactionRecord[]>([])
+  const [transactions, setTransactions] = useState<TransactionRecord[] | null>(null)
   const pendingIntervalIdRef = useRef<number | null>(null)
 
   useEffect(fetchTxHistory, [tokenId, currentPage, refreshTrigger])
@@ -61,7 +61,11 @@ const TransactionHistory = ({ tokenId, className, refreshTrigger }: TransactionH
   return (
     <div className={className}>
       <h2 className="text-xl font-bold mb-4">Interchain Transaction History</h2>
-      {transactions.length === 0 ? (
+      {transactions === null ? (
+        <div className="flex justify-center items-center">
+          <p className="text-gray-500">Loading...</p>
+        </div>
+      ) : transactions.length === 0 ? (
         <div className="flex justify-center items-center">
           <p className="text-gray-500">You have not made any interchain transactions yet.</p>
         </div>
