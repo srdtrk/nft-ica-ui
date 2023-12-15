@@ -24,6 +24,7 @@ enum MessageType {
   Redelegate = 'Redelegate',
   Send = 'Send',
   Transfer = 'IBC Transfer',
+  WithdrawRewards = 'Withdraw Rewards',
 }
 
 export interface State {
@@ -54,6 +55,7 @@ const defaultIBCTransferMsg: CosmosMsgForEmpty = {
     },
   },
 }
+const defaultWithdrawRewardsMsg: CosmosMsgForEmpty = { distribution: { withdraw_delegator_reward: { validator: '' } } }
 
 export function CosmosMsgBuilder({
   index,
@@ -84,6 +86,9 @@ export function CosmosMsgBuilder({
         break
       case MessageType.Transfer:
         setMsg(defaultIBCTransferMsg)
+        break
+      case MessageType.WithdrawRewards:
+        setMsg(defaultWithdrawRewardsMsg)
         break
       // Add cases for other message types here...
       default:
@@ -116,6 +121,8 @@ export function CosmosMsgBuilder({
         return <RedelegateMsgBuilder setMsg={setMsg} />
       case MessageType.Transfer:
         return <IBCMsgBuilder setMsg={setMsg} />
+      case MessageType.WithdrawRewards:
+        return <WithdrawRewardsMsgBuilder setMsg={setMsg} />
       default:
         return null
     }
@@ -506,6 +513,37 @@ const IBCMsgBuilder = ({ setMsg }: IBCMsgBuilderProps): JSX.Element => {
           Timeout
         </label>
         <DateTimePicker id="timeout" onChange={handleTimeoutChange} value={timeout} className="mt-1 block w-full" />
+      </div>
+    </div>
+  )
+}
+
+interface WithdrawRewardsMsgBuilderProps {
+  setMsg: (message: CosmosMsgForEmpty) => void
+}
+
+const WithdrawRewardsMsgBuilder = ({ setMsg }: WithdrawRewardsMsgBuilderProps): JSX.Element => {
+  const [validator, setValidator] = useState<string>('')
+
+  const handleValidatorChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const newValidator = event.target.value
+    setValidator(newValidator)
+    setMsg({ distribution: { withdraw_delegator_reward: { validator: newValidator } } })
+  }
+
+  return (
+    <div className="p-4 border border-gray-300 rounded">
+      <div className="">
+        <label htmlFor="validator" className="block text-sm font-medium text-gray-700">
+          Validator
+        </label>
+        <input
+          type="text"
+          id="validator"
+          value={validator}
+          onChange={handleValidatorChange}
+          className="mt-1 block w-full p-2 border border-gray-300 rounded shadow-sm bg-gray-50"
+        />
       </div>
     </div>
   )
