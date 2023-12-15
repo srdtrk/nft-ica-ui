@@ -29,7 +29,7 @@ function Nfts(): JSX.Element {
 
   if (injectiveAddress === '') {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-96">
         <div className="text-center p-6 max-w-sm mx-auto bg-white rounded-xl shadow-md flex items-center space-x-4">
           <div>
             <div className="text-xl font-medium text-black">Wallet Connection Needed</div>
@@ -46,11 +46,11 @@ function Nfts(): JSX.Element {
       {/* Added pb-20 to give space for the fixed bar */}
       {userWaitingNftIds.length > 0 && <MintingList mintingNfts={userWaitingNftIds.map((nft) => nft.token_id)} />}
       {userNfts === null ? (
-        <div className="flex justify-center items-center h-screen">
+        <div className="flex justify-center items-center h-96">
           <p className="text-gray-500">Loading...</p>
         </div>
       ) : userNfts.length === 0 ? (
-        <div className="flex justify-center items-center h-screen">
+        <div className="flex justify-center items-center h-96">
           <p className="text-gray-500">You do not have any Interchain Account NFTs yet.</p>
         </div>
       ) : (
