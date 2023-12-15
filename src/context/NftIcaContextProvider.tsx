@@ -1,5 +1,9 @@
 import { chainGrpcWasmApi, msgBroadcastClient } from '@/services/services'
-import type { ExecuteMsg as IcaExecuteMsg } from '@/contracts/CwIcaController.types'
+import type {
+  ExecuteMsg as IcaExecuteMsg,
+  QueryMsg as IcaQueryMsg,
+  ChannelState,
+} from '@/contracts/CwIcaController.types'
 // import { getAddresses } from '@/services/wallet'
 import {
   MsgExecuteContractCompat,
@@ -46,6 +50,8 @@ interface StoreState {
     page?: number,
     pageSize?: number,
   ) => Promise<GetTransactionHistoryResponse | undefined>
+  getControllerAddress: (tokenId: string) => Promise<string | undefined>
+  getChannelState: (controllerAddress: string) => Promise<ChannelState | undefined>
   isLoading: boolean
 }
 
@@ -67,6 +73,13 @@ const NftIcaContext = createContext<StoreState>({
   getTxHistory: async () => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return {} as GetTransactionHistoryResponse
+  },
+  getControllerAddress: async () => {
+    return ''
+  },
+  getChannelState: async () => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    return {} as ChannelState
   },
   isLoading: false,
 })
@@ -120,8 +133,25 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
       },
     }
 
-    const resp = await queryContract<GetTransactionHistoryResponse>(NFT_ICA_CONTRACT_ADDRESS, msg)
-    return resp
+    return await queryContract<GetTransactionHistoryResponse>(NFT_ICA_CONTRACT_ADDRESS, msg)
+  }
+
+  async function getControllerAddress(tokenId: string): Promise<string | undefined> {
+    const msg: CoordinatorQueryMsg = {
+      nft_ica_controller_bimap: {
+        key: tokenId,
+      },
+    }
+
+    return await queryContract<string>(NFT_ICA_CONTRACT_ADDRESS, msg)
+  }
+
+  async function getChannelState(controllerAddress: string): Promise<ChannelState | undefined> {
+    const msg: IcaQueryMsg = {
+      get_channel: {},
+    }
+
+    return await queryContract<ChannelState>(controllerAddress, msg)
   }
 
   async function executeIcaMsg(tokenId: string, msg: IcaExecuteMsg): Promise<TxResponse | undefined> {
@@ -268,6 +298,8 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
         executeIcaMsg,
         transferNft,
         getTxHistory,
+        getControllerAddress,
+        getChannelState,
         isLoading,
       }}
     >

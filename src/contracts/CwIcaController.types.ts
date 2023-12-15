@@ -246,6 +246,11 @@ export interface State {
   ica_info?: IcaInfo | null;
   [k: string]: unknown;
 }
+export interface ChannelState {
+  channel: IbcChannel;
+  channel_status: Status;
+  [k: string]: unknown;
+}
 export interface IbcChannel {
   connection_id: string;
   counterparty_endpoint: IbcEndpoint;
