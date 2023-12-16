@@ -70,35 +70,6 @@ const IcaTxBuilder = ({ broadcastTx }: IcaTxBuilderProps): JSX.Element => {
       </div>
     </div>
   )
-
-  // return (
-  //   <div>
-  //     <h2 className="text-3xl font-bold">Interchain Transaction Builder</h2>
-  //
-  //     {/* Scrollable Container for Messages */}
-  //     <div className="overflow-auto my-4 border border-gray-300 rounded" style={{ height: '75vh' }}>
-  //       {messages.map((_, index) => (
-  //         <CosmosMsgBuilder
-  //           key={index}
-  //           index={index}
-  //           setCosmosMsg={updateMessage}
-  //           deleteCosmosMsg={deleteMessage}
-  //           className="p-2"
-  //         />
-  //       ))}
-  //     </div>
-  //
-  //     <div className="flex justify-start">
-  //       <button onClick={addNewMessage} className="p-2 bg-blue-500 text-white rounded mr-4">
-  //         Add Msg
-  //       </button>
-  //
-  //       <button onClick={handleBroadcast} className="p-2 bg-green-500 text-white rounded">
-  //         Broadcast
-  //       </button>
-  //     </div>
-  //   </div>
-  // )
 }
 
 export default IcaTxBuilder
