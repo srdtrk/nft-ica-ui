@@ -1,9 +1,5 @@
 import { chainGrpcWasmApi, msgBroadcastClient } from '@/services/services'
-import type {
-  ExecuteMsg as IcaExecuteMsg,
-  QueryMsg as IcaQueryMsg,
-  ChannelState,
-} from '@/contracts/CwIcaController.types'
+import type { ExecuteMsg as IcaExecuteMsg } from '@/contracts/CwIcaController.types'
 // import { getAddresses } from '@/services/wallet'
 import {
   MsgExecuteContractCompat,
@@ -21,6 +17,7 @@ import type {
 } from '@/contracts/Cw721IcaExtension.types'
 import type {
   ArrayOfQueueItem,
+  ChannelState,
   ExecuteMsg as CoordinatorExecuteMsg,
   QueryMsg as CoordinatorQueryMsg,
   GetIcaAddressesResponse,
@@ -29,10 +26,10 @@ import type {
   QueueItem,
 } from '@/contracts/NftIcaCoordinator.types'
 
-// const NFT_ICA_CONTRACT_ADDRESS = 'inj1t6kw77tc5vagcyatl0gd02veqae9ydeaq0s0qm'
-// const CW721_CONTRACT_ADDRESS = 'inj1t5vs28cd3e5r0flwd3d8hlj7ypkk8x0rjajt6q'
-const NFT_ICA_CONTRACT_ADDRESS = 'inj1mmt8mcw8d50m350r3r7jsralfwc3cp8a85yrrc'
-const CW721_CONTRACT_ADDRESS = 'inj12klzylvx2l3h9y6t5wyyvrd6u6jlpy5gj4rwlr'
+// const NFT_ICA_CONTRACT_ADDRESS = 'inj1mmt8mcw8d50m350r3r7jsralfwc3cp8a85yrrc'
+// const CW721_CONTRACT_ADDRESS = 'inj12klzylvx2l3h9y6t5wyyvrd6u6jlpy5gj4rwlr'
+const NFT_ICA_CONTRACT_ADDRESS = 'inj1yrw99y7zjh0lz888mfqa0gef8jg6txj3l7u3x2'
+const CW721_CONTRACT_ADDRESS = 'inj1cdutrg5pk2x0cth7jmjnkegdt0gdan3f6n28w8'
 
 enum Status {
   Idle = 'idle',
@@ -50,8 +47,7 @@ interface StoreState {
     page?: number,
     pageSize?: number,
   ) => Promise<GetTransactionHistoryResponse | undefined>
-  getControllerAddress: (tokenId: string) => Promise<string | undefined>
-  getChannelState: (controllerAddress: string) => Promise<ChannelState | undefined>
+  getChannelState: (tokenId: string) => Promise<ChannelState | undefined>
   isLoading: boolean
 }
 
@@ -73,9 +69,6 @@ const NftIcaContext = createContext<StoreState>({
   getTxHistory: async () => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return {} as GetTransactionHistoryResponse
-  },
-  getControllerAddress: async () => {
-    return ''
   },
   getChannelState: async () => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -136,22 +129,14 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
     return await queryContract<GetTransactionHistoryResponse>(NFT_ICA_CONTRACT_ADDRESS, msg)
   }
 
-  async function getControllerAddress(tokenId: string): Promise<string | undefined> {
+  async function getChannelState(tokenId: string): Promise<ChannelState | undefined> {
     const msg: CoordinatorQueryMsg = {
-      nft_ica_controller_bimap: {
-        key: tokenId,
+      get_channel_state: {
+        token_id: tokenId,
       },
     }
 
-    return await queryContract<string>(NFT_ICA_CONTRACT_ADDRESS, msg)
-  }
-
-  async function getChannelState(controllerAddress: string): Promise<ChannelState | undefined> {
-    const msg: IcaQueryMsg = {
-      get_channel: {},
-    }
-
-    return await queryContract<ChannelState>(controllerAddress, msg)
+    return await queryContract<ChannelState>(NFT_ICA_CONTRACT_ADDRESS, msg)
   }
 
   async function executeIcaMsg(tokenId: string, msg: IcaExecuteMsg): Promise<TxResponse | undefined> {
@@ -298,7 +283,6 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
         executeIcaMsg,
         transferNft,
         getTxHistory,
-        getControllerAddress,
         getChannelState,
         isLoading,
       }}

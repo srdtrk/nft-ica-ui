@@ -2,11 +2,10 @@ import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { toSvg } from 'jdenticon'
 import NftIcaContextProvider, { useNftIcaStore } from '@/context/NftIcaContextProvider'
-import type { CosmosMsgForEmpty, ExecuteMsg1 as IcaExecuteMsg } from '@/contracts/NftIcaCoordinator.types'
+import type { ChannelState, CosmosMsgForEmpty, ExecuteMsg1 as IcaExecuteMsg } from '@/contracts/NftIcaCoordinator.types'
 import type { TxResponse } from '@injectivelabs/sdk-ts'
 import IcaTxBuilder from '@/components/IcaTxBuilder'
 import TransactionHistory from '@/components/TransactionHistory'
-import { type ChannelState } from '@/contracts/CwIcaController.types'
 import { useNavbarContext } from '@/context/NavbarContext'
 
 function NftDetailPage(): JSX.Element {
@@ -22,7 +21,6 @@ const NftDetail = (): JSX.Element => {
   const { tokenId, icaAddress } = router.query
 
   const [refreshTxHistory, setRefreshTxHistory] = useState(false)
-  const [controllerAddress, setControllerAddress] = useState<string | undefined>(undefined)
 
   const { provideBackButton } = useNavbarContext()
 
@@ -35,16 +33,11 @@ const NftDetail = (): JSX.Element => {
     provideBackButton(goBack)
   }, [])
 
-  const { executeIcaMsg, transferNft, getControllerAddress } = useNftIcaStore()
+  const { executeIcaMsg, transferNft } = useNftIcaStore()
 
   // Check if tokenId and icaAddress are valid strings
   if (typeof tokenId !== 'string' || typeof icaAddress !== 'string') {
     return <div>Invalid URL</div>
-  }
-
-  const onMount = (): void => {
-    // provideBackButton(goBack)
-    void getControllerAddress(tokenId).then(setControllerAddress)
   }
 
   const handleTransferNft = async (tokenId: string, recipient: string): Promise<TxResponse | undefined> => {
@@ -77,10 +70,8 @@ const NftDetail = (): JSX.Element => {
       <div className="flex flex-wrap p-4">
         {/* Left Section: NFT Details */}
         <div className="basis-1/2">
-          <TokenCard tokenId={tokenId} icaAddress={icaAddress} transferNft={handleTransferNft} callback={onMount} />
-          {controllerAddress !== undefined && (
-            <ChannelStateBar tokenId={tokenId} icaControllerAddress={controllerAddress} />
-          )}
+          <TokenCard tokenId={tokenId} icaAddress={icaAddress} transferNft={handleTransferNft} callback={() => {}} />
+          <ChannelStateBar tokenId={tokenId} />
           <TransactionHistory tokenId={tokenId} refreshTrigger={refreshTxHistory} className="mt-5 w-5/6" />
         </div>
 
@@ -178,16 +169,15 @@ const TransferNft = ({ tokenId, transferNft, className }: TransferNftProps): JSX
 
 interface ChannelStateBarProps {
   tokenId: string
-  icaControllerAddress: string
 }
 
-const ChannelStateBar = ({ tokenId, icaControllerAddress }: ChannelStateBarProps): JSX.Element => {
+const ChannelStateBar = ({ tokenId }: ChannelStateBarProps): JSX.Element => {
   const [channelState, setChannelState] = useState<ChannelState | undefined>(undefined)
 
   const { getChannelState, executeIcaMsg } = useNftIcaStore()
 
   useEffect(() => {
-    void getChannelState(icaControllerAddress).then(setChannelState)
+    void getChannelState(tokenId).then(setChannelState)
   }, [])
 
   const handleReopenChannel = (): void => {
@@ -201,15 +191,16 @@ const ChannelStateBar = ({ tokenId, icaControllerAddress }: ChannelStateBarProps
   if (channelState === undefined) {
     return <div></div>
   }
-  const isOpen = channelState.channel_status === 'STATE_OPEN'
+  const isOpen = channelState.status === 'open'
 
+  // TODO: Improve the UI of this component
   return (
     <div className="mt-4">
       <h2 className="text-xl font-bold mb-3">Channel Status</h2>
       <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg max-w-screen-sm">
         <div>
           <span className={`inline-block mr-2 ${isOpen ? 'bg-green-500' : 'bg-red-500'} h-2 w-2 rounded-full`}></span>
-          <p className="inline-block">{channelState.channel.endpoint.channel_id}</p>
+          <p className="inline-block">{channelState.channel_id}</p>
         </div>
         <div className="text-sm">
           <span className={`font-bold text-lg ${isOpen ? 'text-green-500' : 'text-red-500'}`}>

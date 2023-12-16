@@ -309,8 +309,17 @@ export type QueryMsg = {
     token_id: string;
   };
 } | {
+  get_channel_state: {
+    token_id: string;
+  };
+} | {
   ownership: {};
 };
+export type ChannelStatus = "open" | "closed" | "pending";
+export interface ChannelState {
+  channel_id?: string | null;
+  status: ChannelStatus;
+}
 export interface ContractState {
   cw721_ica_extension_address: Addr;
   default_chan_init_options: ChannelOpenInitOptions;
