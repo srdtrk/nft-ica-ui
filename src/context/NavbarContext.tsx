@@ -39,4 +39,3 @@ export const NavbarProvider: React.FC<NavbarProviderProps> = ({ children }) => {
     </NavbarContext.Provider>
   )
 }
-

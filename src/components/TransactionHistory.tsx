@@ -154,14 +154,6 @@ const TransactionRecordCard = ({ record }: TransactionRecordCardProps): JSX.Elem
       <div className="w-1/3 text-right">{new Date(timestampInMilliseconds).toLocaleString()}</div>
     </div>
   )
-  // return (
-  //   <div className="flex items-center justify-between bg-white p-3 rounded-lg shadow mb-2">
-  //     <div>{getStatusIcon(record.status)}</div>
-  //     <div>{record.msg_type.charAt(0).toUpperCase() + record.msg_type.slice(1)}</div>
-  //     <div>Block: {record.block_height}</div>
-  //     <div>{new Date(timestampInMilliseconds).toLocaleString()}</div>
-  //   </div>
-  // )
 }
 
 export default TransactionHistory

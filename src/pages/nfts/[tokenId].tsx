@@ -50,10 +50,16 @@ const NftDetail = (): JSX.Element => {
     return resp
   }
 
-  const broadcastIcaTx = async (messages: CosmosMsgForEmpty[]): Promise<TxResponse | undefined> => {
+  const broadcastIcaTx = async (
+    messages: CosmosMsgForEmpty[],
+    timeoutSeconds?: number,
+    packetMemo?: string,
+  ): Promise<TxResponse | undefined> => {
     const execMsg: IcaExecuteMsg = {
       send_cosmos_msgs: {
         messages,
+        timeout_seconds: timeoutSeconds,
+        packet_memo: packetMemo,
       },
     }
 
