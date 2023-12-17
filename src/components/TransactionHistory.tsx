@@ -144,7 +144,7 @@ const getMessageType = (msgType: TransactionMsgType): string => {
     case 'redelegate':
       return 'Redelegate'
     case 'multi_msg':
-      return 'Multi Msg'
+      return 'MultiMsg'
     case 'distribution':
       return 'Distribution'
     case 'wasm':
