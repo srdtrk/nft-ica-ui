@@ -1,16 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNftIcaStore } from '@/context/NftIcaContextProvider'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faArrowRight, faTimesCircle, faCheckCircle } from '@fortawesome/free-solid-svg-icons'
+import {
+  faArrowLeft,
+  faArrowRight,
+  faTimesCircle,
+  faCheckCircle,
+  faHourglassEnd,
+} from '@fortawesome/free-solid-svg-icons'
 import type { TransactionMsgType, TransactionRecord, TransactionStatus } from '@/contracts/NftIcaCoordinator.types'
 
 interface TransactionHistoryProps {
   tokenId: string
+  timeoutCallback?: () => void
   refreshTrigger?: boolean
   className?: string
 }
 
-const TransactionHistory = ({ tokenId, className, refreshTrigger }: TransactionHistoryProps): JSX.Element => {
+const TransactionHistory = ({
+  tokenId,
+  className,
+  refreshTrigger,
+  timeoutCallback,
+}: TransactionHistoryProps): JSX.Element => {
   const pageSize = 8
 
   const { getTxHistory } = useNftIcaStore()
@@ -27,11 +39,18 @@ const TransactionHistory = ({ tokenId, className, refreshTrigger }: TransactionH
         setTransactions(response.records)
         const maxPage = Math.ceil(response.total / pageSize) - 1
         setMaxPage(maxPage)
+
         const isPending = response.records.some((tx) => tx.status === 'pending')
         if (isPending) {
           startInterval()
         } else {
           stopInterval()
+        }
+
+        if (response.records.length > 0 && response.records[0].status === 'timeout') {
+          if (timeoutCallback !== undefined) {
+            timeoutCallback()
+          }
         }
       }
     })
@@ -104,7 +123,7 @@ const getStatusIcon = (status: TransactionStatus): JSX.Element | null => {
     case 'failed':
       return <FontAwesomeIcon icon={faTimesCircle} className="text-red-500" />
     case 'timeout':
-      return <FontAwesomeIcon icon={faTimesCircle} className="text-red-500" />
+      return <FontAwesomeIcon icon={faHourglassEnd} className="text-red-500" />
     default:
       return null
   }

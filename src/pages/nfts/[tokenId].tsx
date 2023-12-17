@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { toSvg } from 'jdenticon'
 import NftIcaContextProvider, { useNftIcaStore } from '@/context/NftIcaContextProvider'
 import type { ChannelState, CosmosMsgForEmpty, ExecuteMsg1 as IcaExecuteMsg } from '@/contracts/NftIcaCoordinator.types'
@@ -21,6 +21,7 @@ const NftDetail = (): JSX.Element => {
   const { tokenId, icaAddress } = router.query
 
   const [refreshTxHistory, setRefreshTxHistory] = useState(false)
+  const [refreshChannelState, setRefreshChannelState] = useState(false)
 
   const { provideBackButton } = useNavbarContext()
 
@@ -48,6 +49,10 @@ const NftDetail = (): JSX.Element => {
     }
 
     return resp
+  }
+
+  const handleTimeoutCallback = (): void => {
+    setRefreshChannelState(!refreshChannelState)
   }
 
   const broadcastIcaTx = async (
@@ -78,7 +83,12 @@ const NftDetail = (): JSX.Element => {
         <div className="basis-1/2">
           <TokenCard tokenId={tokenId} icaAddress={icaAddress} transferNft={handleTransferNft} callback={() => {}} />
           <ChannelStateBar tokenId={tokenId} />
-          <TransactionHistory tokenId={tokenId} refreshTrigger={refreshTxHistory} className="mt-5 w-5/6" />
+          <TransactionHistory
+            tokenId={tokenId}
+            timeoutCallback={handleTimeoutCallback}
+            refreshTrigger={refreshTxHistory}
+            className="mt-5 w-5/6"
+          />
         </div>
 
         {/* Right Section: Placeholder for Interchain Transaction Component */}
@@ -175,50 +185,110 @@ const TransferNft = ({ tokenId, transferNft, className }: TransferNftProps): JSX
 
 interface ChannelStateBarProps {
   tokenId: string
+  refreshTrigger?: boolean
 }
 
-const ChannelStateBar = ({ tokenId }: ChannelStateBarProps): JSX.Element => {
+const ChannelStateBar = ({ tokenId, refreshTrigger }: ChannelStateBarProps): JSX.Element => {
   const [channelState, setChannelState] = useState<ChannelState | undefined>(undefined)
+  const pendingIntervalIdRef = useRef<number | null>(null)
 
   const { getChannelState, executeIcaMsg } = useNftIcaStore()
 
-  useEffect(() => {
-    void getChannelState(tokenId).then(setChannelState)
-  }, [])
+  useEffect(fetchChannelState, [tokenId, refreshTrigger])
 
   const handleReopenChannel = (): void => {
     const execMsg: IcaExecuteMsg = {
       create_channel: {},
     }
 
-    void executeIcaMsg(tokenId, execMsg)
+    void executeIcaMsg(tokenId, execMsg).then(fetchChannelState, alert)
   }
 
   if (channelState === undefined) {
     return <div></div>
   }
-  const isOpen = channelState.status === 'open'
 
-  // TODO: Improve the UI of this component
+  function startInterval(): void {
+    if (pendingIntervalIdRef.current === null) {
+      const intervalId = setInterval(fetchChannelState, 5000) as unknown as number
+      pendingIntervalIdRef.current = intervalId
+    }
+  }
+
+  function stopInterval(): void {
+    if (pendingIntervalIdRef.current !== null) {
+      clearInterval(pendingIntervalIdRef.current)
+      pendingIntervalIdRef.current = null
+    }
+  }
+
+  function fetchChannelState(): void {
+    void getChannelState(tokenId).then((resp) => {
+      setChannelState(resp)
+      if (resp === undefined) {
+        stopInterval()
+      } else if (resp.status === 'open') {
+        stopInterval()
+      } else if (resp.status === 'pending') {
+        startInterval()
+      } else {
+        stopInterval()
+      }
+    })
+  }
+
+  const channelStatus = channelState?.status
+
+  const getStatusColor = (status: string): string => {
+    switch (status) {
+      case 'open':
+        return 'text-green-500'
+      case 'closed':
+        return 'text-red-500'
+      case 'pending':
+        return 'text-yellow-500'
+      default:
+        return 'text-gray-500'
+    }
+  }
+
+  const getStatusDotColor = (status: string): string => {
+    switch (status) {
+      case 'open':
+        return 'bg-green-500'
+      case 'closed':
+        return 'bg-red-500'
+      case 'pending':
+        return 'bg-yellow-500'
+      default:
+        return 'bg-gray-500'
+    }
+  }
+
   return (
     <div className="mt-4">
       <h2 className="text-xl font-bold mb-3">Channel Status</h2>
       <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg max-w-screen-sm">
         <div>
-          <span className={`inline-block mr-2 ${isOpen ? 'bg-green-500' : 'bg-red-500'} h-2 w-2 rounded-full`}></span>
-          <p className="inline-block">{channelState.channel_id}</p>
+          <span className={`inline-block mr-2 ${getStatusDotColor(channelStatus)} h-2 w-2 rounded-full`}></span>
+          <p className="inline-block">{channelStatus !== 'pending' ? channelState.channel_id : ''}</p>
         </div>
-        <div className="text-sm">
-          <span className={`font-bold text-lg ${isOpen ? 'text-green-500' : 'text-red-500'}`}>
-            {isOpen ? 'Open' : 'Closed'}
+        <div className="flex text-sm">
+          {channelStatus === 'pending' && (
+            <div className="animate-spin rounded-full w-4 border-b-2 border-gray-900 mr-4"></div>
+          )}
+          <span className={`font-bold text-lg ${getStatusColor(channelStatus)}`}>
+            {channelStatus.charAt(0).toUpperCase() + channelStatus.slice(1)}
           </span>
         </div>
         <button
           onClick={handleReopenChannel}
           className={`py-1 px-4 rounded ${
-            isOpen ? 'bg-gray-300 cursor-not-allowed text-gray-400' : 'bg-blue-500 hover:bg-blue-700 text-white'
+            channelStatus === 'open'
+              ? 'bg-gray-300 cursor-not-allowed text-gray-400'
+              : 'bg-blue-500 hover:bg-blue-700 text-white'
           }`}
-          disabled={isOpen}
+          disabled={channelStatus === 'open'}
         >
           Reopen Channel
         </button>
