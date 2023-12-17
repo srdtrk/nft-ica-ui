@@ -404,7 +404,7 @@ const IBCMsgBuilder = ({ setMsg }: IBCMsgBuilderProps): JSX.Element => {
   const [channelId, setChannelId] = useState<string>('')
   // add 10 minutes to the current time
   const date = new Date()
-  date.setMinutes(date.getMinutes() + 10)
+  date.setMinutes(date.getMinutes() + 15)
   const [timeout, setTimeout] = useState<Date | null>(date)
 
   // Handle the change in the amount

@@ -11,7 +11,7 @@ interface TransactionHistoryProps {
 }
 
 const TransactionHistory = ({ tokenId, className, refreshTrigger }: TransactionHistoryProps): JSX.Element => {
-  const pageSize = 5
+  const pageSize = 8
 
   const { getTxHistory } = useNftIcaStore()
   const [currentPage, setCurrentPage] = useState(0)

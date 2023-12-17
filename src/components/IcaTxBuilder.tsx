@@ -44,7 +44,7 @@ const IcaTxBuilder = ({ broadcastTx }: IcaTxBuilderProps): JSX.Element => {
 
   return (
     <div className="bg-gray-50 p-4 shadow rounded-lg">
-      <h2 className="text-3xl font-bold mb-4">Atomic Interchain Transaction Builder</h2>
+      <h2 className="text-2xl font-bold mb-4">Atomic Interchain Transaction Builder</h2>
 
       {/* Scrollable Container for Messages */}
       <div className="overflow-auto mb-4 border border-gray-300 rounded bg-zinc-200" style={{ height: '75vh' }}>

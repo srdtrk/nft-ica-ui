@@ -28,8 +28,8 @@ import type {
 
 // const NFT_ICA_CONTRACT_ADDRESS = 'inj1mmt8mcw8d50m350r3r7jsralfwc3cp8a85yrrc'
 // const CW721_CONTRACT_ADDRESS = 'inj12klzylvx2l3h9y6t5wyyvrd6u6jlpy5gj4rwlr'
-const NFT_ICA_CONTRACT_ADDRESS = 'inj1yrw99y7zjh0lz888mfqa0gef8jg6txj3l7u3x2'
-const CW721_CONTRACT_ADDRESS = 'inj1cdutrg5pk2x0cth7jmjnkegdt0gdan3f6n28w8'
+const NFT_ICA_CONTRACT_ADDRESS = 'inj14763fmusc39llgkgdlg9fll05pzxrnmzd3np5r'
+const CW721_CONTRACT_ADDRESS = 'inj1fvxdz0mac9x87k95xm0rm8jxvewde4kg4rwcng'
 
 enum Status {
   Idle = 'idle',
