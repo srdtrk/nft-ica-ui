@@ -42,9 +42,7 @@ function Nfts(): JSX.Element {
 
   return (
     <div className="relative p-6 pb-20">
-      {' '}
       {/* Added pb-20 to give space for the fixed bar */}
-      {userWaitingNftIds.length > 0 && <MintingList mintingNfts={userWaitingNftIds.map((nft) => nft.token_id)} />}
       {userNfts === null ? (
         <div className="flex justify-center items-center h-96">
           <p className="text-gray-500">Loading...</p>
@@ -60,6 +58,7 @@ function Nfts(): JSX.Element {
           ))}
         </div>
       )}
+      {userWaitingNftIds.length > 0 && <MintingList mintingNfts={userWaitingNftIds.map((nft) => nft.token_id)} />}
       <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-md justify-center flex">
         <button
           onClick={handleMintNft}
