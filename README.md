@@ -10,7 +10,7 @@ This application was built for the [Injective Illuminate Hackathon](https://dora
 
 ## Setup
 
-To use the frontend, you can visit [here](). To run the front end locally, fill in a `.env.local` file as in [`.env.example`](./.env.example) and run the following command.
+To use the frontend, you can visit [here](https://srdtrk.github.io/nft-ica-ui/). To run the front end locally, fill in a `.env.local` file as in [`.env.example`](./.env.example) and run the following command.
 
 ```
 npm run dev
