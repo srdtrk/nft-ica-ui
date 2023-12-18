@@ -2,11 +2,17 @@
 
 ## Overview
 
-This is a frontend for the Injective [NFT-ICA application](https://github.com/srdtrk/cw-nft-ica). It is built based on the next/react [Injective Counter Contract Example](https://github.com/InjectiveLabs/injective-simple-sc-counter-ui).
+This is a frontend for the Injective [NFT-ICA application](https://github.com/srdtrk/cw-nft-ica). It is built based on the next/react [Injective Counter Contract Example](https://github.com/InjectiveLabs/injective-simple-sc-counter-ui). This frontend is only intended to be used in the testnet.
+
+## Motivation
+
+This application was built for the [Injective Illuminate Hackathon](https://dorahacks.io/hackathon/illuminate/detail).
 
 ## Setup
 
-For this application to run correctly, a relayer must be running with the NFT-ICA application. It must relay all packets between the following connections:
+To run the front end, fill in a `.env.local` file as in [`.env.example`](./.env.example) and run the following commands.
+
+For this application to run correctly, a relayer must be running with the NFT-ICA application. It must relay all packets between the following connections. A relayer configuration file and setup guide can be found in the [parent repo](https://github.com/srdtrk/cw-nft-ica).
 
 ```rust
 SUCCESS Connection {
