@@ -28,4 +28,3 @@ const MintingList: React.FC<MintingListProps> = ({ mintingNfts }) => {
 }
 
 export default MintingList
-
