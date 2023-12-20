@@ -49,7 +49,7 @@ const Navbar = (): JSX.Element => {
               </button>
             </div>
           ) : (
-            <h2 className="font-semibold text-lg">Interchain Account NFTs</h2>
+            <h2 className="font-semibold text-lg">Tokenized Interchain Accounts</h2>
           )}
         </div>
         <ConnectWallet />
