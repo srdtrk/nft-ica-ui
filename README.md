@@ -41,11 +41,11 @@ SUCCESS Connection {
             runtime_sender: Sender { .. },
         },
         client_id: ClientId(
-            "07-tendermint-194",
+            "07-tendermint-197",
         ),
         connection_id: Some(
             ConnectionId(
-                "connection-184",
+                "connection-187",
             ),
         ),
     },
@@ -58,15 +58,15 @@ SUCCESS Connection {
             runtime_sender: Sender { .. },
         },
         client_id: ClientId(
-            "07-tendermint-2602",
+            "07-tendermint-2672",
         ),
         connection_id: Some(
             ConnectionId(
-                "connection-2963",
+                "connection-3015",
             ),
         ),
     },
 }
 ```
 
-I've also created a transfer channel between the two chains for testing with channel id `channel-160` on the Injective chain and `channel-3440` on the Cosmos Hub Theta Testnet.
+I've also created a transfer channel between the two chains for testing with channel id `channel-160` on the Injective chain and `channel-3440` on the Cosmos Hub Theta Testnet. (This transfer channel is now expired and unusable.)
