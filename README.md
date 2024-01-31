@@ -69,4 +69,4 @@ SUCCESS Connection {
 }
 ```
 
-I've also created a transfer channel between the two chains for testing with channel id `channel-160` on the Injective chain and `channel-3440` on the Cosmos Hub Theta Testnet. (This transfer channel is now expired and unusable.)
+I've also created a transfer channel between the two chains for testing with channel id `channel-189` on the Injective chain and `channel-3602` on the Cosmos Hub Theta Testnet. (This transfer channel is now expired and unusable.)
