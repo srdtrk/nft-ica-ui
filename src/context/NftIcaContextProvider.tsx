@@ -26,10 +26,10 @@ import type {
   QueueItem,
 } from '@/contracts/NftIcaCoordinator.types'
 
-// const NFT_ICA_CONTRACT_ADDRESS = 'inj1r0zaluz99ge2ej756grtjnj4wu9jweak97ve3e'
-// const CW721_CONTRACT_ADDRESS = 'inj1a3d2tartugvdp3h7tj5xyfanxmdmc2qvwj4wga'
-const NFT_ICA_CONTRACT_ADDRESS = 'inj1qvygu7cj7trqu40ncjqewgu3zprnrnf05w9jne'
-const CW721_CONTRACT_ADDRESS = 'inj1rajhwzee4zf2899fpytgakprdfcgs02mcjmdnn'
+// const NFT_ICA_CONTRACT_ADDRESS = 'inj1qvygu7cj7trqu40ncjqewgu3zprnrnf05w9jne'
+// const CW721_CONTRACT_ADDRESS = 'inj1rajhwzee4zf2899fpytgakprdfcgs02mcjmdnn'
+const NFT_ICA_CONTRACT_ADDRESS = 'inj1na2fdvcyngukk4nr7e4t8gd3nvdqwxyhs3hppj'
+const CW721_CONTRACT_ADDRESS = 'inj1zaldrpkszampurlx2ey0ggxshkely5285wwszp'
 
 enum Status {
   Idle = 'idle',
