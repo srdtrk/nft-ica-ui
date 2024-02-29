@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react'
+import { createContext, useContext, useState } from 'react'
 import { SecretNetworkClient } from 'secretjs'
 
 const SECRET_CHAIN_ID = 'pulsar-3'
@@ -25,6 +25,8 @@ const SecretjsContext = createContext<StoreState>({
 interface Props {
   children?: React.ReactNode
 }
+
+export const useSecretjsContextStore = (): StoreState => useContext(SecretjsContext)
 
 const SecretjsContextProvider = (props: Props): JSX.Element => {
   const [secretjs, setSecretjs] = useState<SecretNetworkClient | null>(null)

@@ -1,7 +1,7 @@
 import NftIcaContextProvider, { useNftIcaStore } from '@/context/NftIcaContextProvider'
 import NftCard from '@/components/NftCard'
 import MintingList from '@/components/MintingList'
-import { useWalletStore } from '@/context/WalletContextProvider'
+import { useSecretjsContextStore } from '@/context/SecretjsContext'
 import { useEffect } from 'react'
 import { useNavbarContext } from '@/context/NavbarContext'
 // import React, { useEffect, useState } from 'react'
@@ -16,7 +16,7 @@ function NftsPage(): JSX.Element {
 
 function Nfts(): JSX.Element {
   const { userNfts, userWaitingNftIds, mint } = useNftIcaStore()
-  const { injectiveAddress } = useWalletStore()
+  const { secretAddress } = useSecretjsContextStore()
 
   const { hideBackButton } = useNavbarContext()
   useEffect(() => {
@@ -27,7 +27,7 @@ function Nfts(): JSX.Element {
     void mint()
   }
 
-  if (injectiveAddress === '') {
+  if (secretAddress === '') {
     return (
       <div className="flex justify-center items-center h-96">
         <div className="text-center p-6 max-w-sm mx-auto bg-white rounded-xl shadow-md flex items-center space-x-4">

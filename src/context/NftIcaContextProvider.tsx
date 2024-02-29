@@ -9,7 +9,7 @@ import {
   toBase64,
 } from '@injectivelabs/sdk-ts'
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
-import { useWalletStore } from './WalletContextProvider'
+import { useSecretjsContextStore } from '@/context/SecretjsContext'
 import type {
   QueryMsg as Cw721QueryMsg,
   ExecuteMsg as Cw721ExecuteMsg,
@@ -89,13 +89,13 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
   const waitlistIntervalIdRef = useRef<number | null>(null)
   const [status, setStatus] = useState<Status>(Status.Idle)
   const isLoading = status === Status.Loading
-  const { injectiveAddress } = useWalletStore()
+  const { secretAddress } = useSecretjsContextStore()
 
   useEffect(() => {
-    if (injectiveAddress !== '') {
+    if (secretAddress !== '') {
       void fetchNftIds().then(fetchWaitingNftIds)
     }
-  }, [injectiveAddress])
+  }, [secretAddress])
 
   async function mint(): Promise<TxResponse | undefined> {
     // Generate a number between 1000000000000000 and 9999999999999999
@@ -162,7 +162,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
   }
 
   async function fetchNftIds(): Promise<void> {
-    if (injectiveAddress === '') {
+    if (secretAddress === '') {
       stopInterval()
       alert('No Wallet Connected')
       return
@@ -170,7 +170,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
 
     const msg: Cw721QueryMsg = {
       tokens: {
-        owner: injectiveAddress,
+        owner: secretAddress,
       },
     }
 
@@ -190,7 +190,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
   }
 
   async function fetchWaitingNftIds(): Promise<void> {
-    if (injectiveAddress === '') {
+    if (secretAddress === '') {
       stopInterval()
       alert('No Wallet Connected')
       return
@@ -202,7 +202,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
 
     let response = await queryContract<ArrayOfQueueItem>(NFT_ICA_CONTRACT_ADDRESS, msg)
     if (response !== undefined) {
-      response = response?.filter((item) => item.owner === injectiveAddress)
+      response = response?.filter((item) => item.owner === secretAddress)
       if (response !== userWaitingNftIds) {
         void fetchNftIds()
       }
@@ -246,7 +246,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
   }
 
   async function executeContract(contractAddress: string, msg: Record<string, any>): Promise<TxResponse | undefined> {
-    if (injectiveAddress === '') {
+    if (secretAddress === '') {
       alert('No Wallet Connected')
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return {} as TxResponse
@@ -257,13 +257,12 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
     try {
       const execMsg = MsgExecuteContractCompat.fromJSON({
         contractAddress,
-        sender: injectiveAddress,
+        sender: secretAddress,
         msg,
       })
 
       const resp = await msgBroadcastClient.broadcast({
         msgs: execMsg,
-        injectiveAddress,
       })
 
       return resp
