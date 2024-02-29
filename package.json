@@ -30,6 +30,7 @@
     "secretjs": "^1.12.4"
   },
   "devDependencies": {
+    "@keplr-wallet/types": "^0.12.70",
     "@rushstack/eslint-patch": "^1.2.0",
     "@typescript-eslint/eslint-plugin": "^6.13.1",
     "@typescript-eslint/parser": "^6.13.1",
