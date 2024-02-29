@@ -3,10 +3,10 @@ import React, { useEffect, useRef, useState } from 'react'
 import { toSvg } from 'jdenticon'
 import NftIcaContextProvider, { useNftIcaStore } from '@/context/NftIcaContextProvider'
 import type { ChannelState, CosmosMsgForEmpty, ExecuteMsg1 as IcaExecuteMsg } from '@/contracts/NftIcaCoordinator.types'
-import type { TxResponse } from '@injectivelabs/sdk-ts'
 import IcaTxBuilder from '@/components/IcaTxBuilder'
 import TransactionHistory from '@/components/TransactionHistory'
 import { useNavbarContext } from '@/context/NavbarContext'
+import type { TxResponse } from 'secretjs'
 
 function NftDetailPage(): JSX.Element {
   return (

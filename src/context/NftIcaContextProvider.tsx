@@ -1,13 +1,4 @@
-import { chainGrpcWasmApi, msgBroadcastClient } from '@/services/services'
 import type { ExecuteMsg as IcaExecuteMsg } from '@/contracts/CwIcaController.types'
-// import { getAddresses } from '@/services/wallet'
-import {
-  MsgExecuteContractCompat,
-  type TxResponse,
-  // fromBase64,
-  // getInjectiveAddress,
-  toBase64,
-} from '@injectivelabs/sdk-ts'
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { useSecretjsContextStore } from '@/context/SecretjsContext'
 import type {
@@ -25,11 +16,12 @@ import type {
   NftIcaPair,
   QueueItem,
 } from '@/contracts/NftIcaCoordinator.types'
+import type { TxResponse } from 'secretjs'
 
-// const NFT_ICA_CONTRACT_ADDRESS = 'inj1qvygu7cj7trqu40ncjqewgu3zprnrnf05w9jne'
-// const CW721_CONTRACT_ADDRESS = 'inj1rajhwzee4zf2899fpytgakprdfcgs02mcjmdnn'
-const NFT_ICA_CONTRACT_ADDRESS = 'inj1na2fdvcyngukk4nr7e4t8gd3nvdqwxyhs3hppj'
-const CW721_CONTRACT_ADDRESS = 'inj1zaldrpkszampurlx2ey0ggxshkely5285wwszp'
+const NFT_ICA_CONTRACT_ADDRESS = 'secret1ke9rs87nfu24vcqrdndvv4x9wpkmswc6kjs09s'
+const NFT_ICA_CODE_HASH = '18033e8600ee524198184d8b8ffaa43dd23582a723b95ff545726af2f178c69a'
+const SNIP721_CONTRACT_ADDRESS = 'secret1nt8wfm6fcrahlz3h3x83gxvgmd734xxc9325g6'
+const SNIP721_CODE_HASH = '773c39a4b75d87c4d04b6cfe16d32cd5136271447e231b342f7467177c363ca8'
 
 enum Status {
   Idle = 'idle',
@@ -89,7 +81,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
   const waitlistIntervalIdRef = useRef<number | null>(null)
   const [status, setStatus] = useState<Status>(Status.Idle)
   const isLoading = status === Status.Loading
-  const { secretAddress } = useSecretjsContextStore()
+  const { secretjs, secretAddress } = useSecretjsContextStore()
 
   useEffect(() => {
     if (secretAddress !== '') {
@@ -108,7 +100,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
       },
     }
 
-    const resp = await executeContract(NFT_ICA_CONTRACT_ADDRESS, msg)
+    const resp = await executeContract(NFT_ICA_CONTRACT_ADDRESS, NFT_ICA_CODE_HASH, msg)
     void fetchWaitingNftIds()
     return resp
   }
@@ -126,7 +118,11 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
       },
     }
 
-    return await queryContract<GetTransactionHistoryResponse>(NFT_ICA_CONTRACT_ADDRESS, msg)
+    return await queryContract<CoordinatorQueryMsg, GetTransactionHistoryResponse>(
+      NFT_ICA_CONTRACT_ADDRESS,
+      NFT_ICA_CODE_HASH,
+      msg,
+    )
   }
 
   async function getChannelState(tokenId: string): Promise<ChannelState | undefined> {
@@ -136,7 +132,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
       },
     }
 
-    return await queryContract<ChannelState>(NFT_ICA_CONTRACT_ADDRESS, msg)
+    return await queryContract<CoordinatorQueryMsg, ChannelState>(NFT_ICA_CONTRACT_ADDRESS, NFT_ICA_CODE_HASH, msg)
   }
 
   async function executeIcaMsg(tokenId: string, msg: IcaExecuteMsg): Promise<TxResponse | undefined> {
@@ -147,7 +143,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
       },
     }
 
-    return await executeContract(NFT_ICA_CONTRACT_ADDRESS, executeMsg)
+    return await executeContract(NFT_ICA_CONTRACT_ADDRESS, NFT_ICA_CODE_HASH, executeMsg)
   }
 
   async function transferNft(tokenId: string, recipient: string): Promise<TxResponse | undefined> {
@@ -158,7 +154,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
       },
     }
 
-    return await executeContract(CW721_CONTRACT_ADDRESS, executeMsg)
+    return await executeContract(SNIP721_CONTRACT_ADDRESS, SNIP721_CODE_HASH, executeMsg)
   }
 
   async function fetchNftIds(): Promise<void> {
@@ -174,7 +170,11 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
       },
     }
 
-    const response = await queryContract<TokensResponse>(CW721_CONTRACT_ADDRESS, msg)
+    const response = await queryContract<Cw721QueryMsg, TokensResponse>(
+      SNIP721_CONTRACT_ADDRESS,
+      SNIP721_CODE_HASH,
+      msg,
+    )
     if (response !== undefined) {
       const msg: CoordinatorQueryMsg = {
         get_ica_addresses: {
@@ -182,7 +182,11 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
         },
       }
 
-      const resp = await queryContract<GetIcaAddressesResponse>(NFT_ICA_CONTRACT_ADDRESS, msg)
+      const resp = await queryContract<CoordinatorQueryMsg, GetIcaAddressesResponse>(
+        NFT_ICA_CONTRACT_ADDRESS,
+        NFT_ICA_CODE_HASH,
+        msg,
+      )
       if (resp !== undefined) {
         setUserNfts(resp?.pairs)
       }
@@ -200,7 +204,11 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
       get_mint_queue: {},
     }
 
-    let response = await queryContract<ArrayOfQueueItem>(NFT_ICA_CONTRACT_ADDRESS, msg)
+    let response = await queryContract<CoordinatorQueryMsg, ArrayOfQueueItem>(
+      NFT_ICA_CONTRACT_ADDRESS,
+      NFT_ICA_CODE_HASH,
+      msg,
+    )
     if (response !== undefined) {
       response = response?.filter((item) => item.owner === secretAddress)
       if (response !== userWaitingNftIds) {
@@ -231,13 +239,20 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
     }
   }
 
-  async function queryContract<T>(contractAddress: string, msg: Record<string, any>): Promise<T | undefined> {
+  async function queryContract<T extends object, R>(
+    contractAddress: string,
+    codeHash: string,
+    msg: T,
+  ): Promise<R | undefined> {
     setStatus(Status.Loading)
     try {
-      const response = await chainGrpcWasmApi.fetchSmartContractState(contractAddress, toBase64(msg))
+      const response = await secretjs?.query.compute.queryContract<T, R>({
+        contract_address: contractAddress,
+        code_hash: codeHash,
+        query: msg,
+      })
 
-      // return Buffer.from(response.data).toString('utf8')
-      return JSON.parse(Buffer.from(response.data).toString('utf8')) as T
+      return response
     } catch (e) {
       alert(e)
     } finally {
@@ -245,7 +260,12 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
     }
   }
 
-  async function executeContract(contractAddress: string, msg: Record<string, any>): Promise<TxResponse | undefined> {
+  async function executeContract<T extends object>(
+    contractAddress: string,
+    codeHash: string,
+    msg: T,
+    gasLimit?: number,
+  ): Promise<TxResponse | undefined> {
     if (secretAddress === '') {
       alert('No Wallet Connected')
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -254,16 +274,21 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
 
     setStatus(Status.Loading)
 
-    try {
-      const execMsg = MsgExecuteContractCompat.fromJSON({
-        contractAddress,
-        sender: secretAddress,
-        msg,
-      })
+    gasLimit = gasLimit ?? 100_000
 
-      const resp = await msgBroadcastClient.broadcast({
-        msgs: execMsg,
-      })
+    try {
+      const resp = await secretjs?.tx.compute.executeContract(
+        {
+          sender: secretAddress,
+          contract_address: contractAddress,
+          code_hash: codeHash,
+          sent_funds: [],
+          msg,
+        },
+        {
+          gasLimit,
+        },
+      )
 
       return resp
     } catch (e) {

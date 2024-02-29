@@ -1,12 +1,12 @@
-# Injective NFT-ICA Frontend
+# Secret NFT-ICA Frontend
 
 ## Overview
 
-This is a frontend for the Injective [NFT-ICA application](https://github.com/srdtrk/cw-nft-ica). It is built based on the next/react [Injective Counter Contract Example](https://github.com/InjectiveLabs/injective-simple-sc-counter-ui). This frontend is only intended to be used in the testnet. For a full overview of the project go to the [parent repository](https://github.com/srdtrk/cw-nft-ica).
+This is a frontend for the Secret [NFT-ICA application](https://github.com/srdtrk/cw-nft-ica). For a full overview of the project go to the [parent repository](https://github.com/srdtrk/cw-nft-ica).
 
 ## Motivation
 
-This application was built for the [Injective Illuminate Hackathon](https://dorahacks.io/hackathon/illuminate/detail).
+This application was built for the [Hack Secret](https://dorahacks.io/hackathon/hacksecret2024/detail).
 
 ## Setup
 
@@ -16,7 +16,7 @@ To use the frontend, you can visit [here](https://srdtrk.github.io/nft-ica-ui/).
 npm run dev
 ```
 
-For this application to run correctly, a relayer must be running with the NFT-ICA application. It must relay all packets between `theta-testnet-001` and `injective-888`. A relayer configuration file and setup guide can be found in the [parent repo](https://github.com/srdtrk/cw-nft-ica). I would've liked to run my own relayer at all times while the judges are checking out the application, however, since the judging period is not clear, and running a relayer is costly and unstable with free APIs, I cannot guarantee that a relayer will be up, unless the judges what to coordinate with me. For this, you can either contact me directly or create an issue in any of the repos.
+For this application to run correctly, a relayer must be running with the NFT-ICA application. It must relay all packets between `theta-testnet-001` and `pulsar-3`. A relayer configuration file and setup guide can be found in the [parent repo](https://github.com/srdtrk/cw-nft-ica). I would've liked to run my own relayer at all times while the judges are checking out the application, however, since the judging period is not clear, and running a relayer is costly and unstable with free APIs, I cannot guarantee that a relayer will be up, unless the judges what to coordinate with me. For this, you can either contact me directly or create an issue in any of the repos.
 
 ## Pictures
 
@@ -35,17 +35,17 @@ SUCCESS Connection {
     a_side: ConnectionSide {
         chain: BaseChainHandle {
             chain_id: ChainId {
-                id: "injective-888",
-                version: 888,
+                id: "pulsar-3",
+                version: 3,
             },
             runtime_sender: Sender { .. },
         },
         client_id: ClientId(
-            "07-tendermint-235",
+            "07-tendermint-87",
         ),
         connection_id: Some(
             ConnectionId(
-                "connection-217",
+                "connection-74",
             ),
         ),
     },
@@ -58,11 +58,11 @@ SUCCESS Connection {
             runtime_sender: Sender { .. },
         },
         client_id: ClientId(
-            "07-tendermint-3216",
+            "07-tendermint-3256",
         ),
         connection_id: Some(
             ConnectionId(
-                "connection-3391",
+                "connection-3418",
             ),
         ),
     },
