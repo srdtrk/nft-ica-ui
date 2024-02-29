@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { CosmosMsgBuilder } from './CosmosMsgBuilder' // Adjust the import path as needed
 import type { CosmosMsgForEmpty } from '@/contracts/NftIcaCoordinator.types'
-import type { TxResponse } from '@injectivelabs/sdk-ts'
+import type { TxResponse } from 'secretjs'
 
 interface IcaTxBuilderProps {
   broadcastTx: (

@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from 'react'
 import { SecretNetworkClient } from 'secretjs'
 
 const SECRET_CHAIN_ID = 'pulsar-3'
-const SECRET_LCD = 'https://api.pulsar3.scrttestnet.com'
+const SECRET_LCD = 'https://lcd.pulsar-3.secretsaturn.net'
 
 interface StoreState {
   secretjs: SecretNetworkClient | null

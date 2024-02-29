@@ -2,10 +2,10 @@ import type { ExecuteMsg as IcaExecuteMsg } from '@/contracts/CwIcaController.ty
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { useSecretjsContextStore } from '@/context/SecretjsContext'
 import type {
-  QueryMsg as Cw721QueryMsg,
-  ExecuteMsg as Cw721ExecuteMsg,
-  TokensResponse,
-} from '@/contracts/Cw721IcaExtension.types'
+  QueryMsg as Snip721QueryMsg,
+  ExecuteMsg as Snip721ExecuteMsg,
+  QueryAnswer,
+} from '@/contracts/Snip721.types'
 import type {
   ArrayOfQueueItem,
   ChannelState,
@@ -147,7 +147,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
   }
 
   async function transferNft(tokenId: string, recipient: string): Promise<TxResponse | undefined> {
-    const executeMsg: Cw721ExecuteMsg = {
+    const executeMsg: Snip721ExecuteMsg = {
       transfer_nft: {
         recipient,
         token_id: tokenId,
@@ -164,21 +164,41 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
       return
     }
 
-    const msg: Cw721QueryMsg = {
+    const msg: Snip721QueryMsg = {
       tokens: {
         owner: secretAddress,
       },
     }
 
-    const response = await queryContract<Cw721QueryMsg, TokensResponse>(
-      SNIP721_CONTRACT_ADDRESS,
-      SNIP721_CODE_HASH,
-      msg,
-    )
+    const response = await queryContract<Snip721QueryMsg, QueryAnswer>(SNIP721_CONTRACT_ADDRESS, SNIP721_CODE_HASH, msg)
+
+    interface TokenListVariant {
+      token_list: {
+        tokens: string[]
+        [k: string]: unknown
+      }
+    }
+
+    // Type guard function
+    function isTokenListVariant(queryAnswer: QueryAnswer): queryAnswer is TokenListVariant {
+      // Check if the 'token_list' property exists and is an object
+      return (
+        typeof queryAnswer === 'object' &&
+        queryAnswer !== null &&
+        'token_list' in queryAnswer &&
+        // Further validate that 'tokens' is an array
+        Array.isArray((queryAnswer as TokenListVariant).token_list.tokens)
+      )
+    }
+
     if (response !== undefined) {
+      if (!isTokenListVariant(response)) {
+        alert('Error fetching NFTs')
+        return
+      }
       const msg: CoordinatorQueryMsg = {
         get_ica_addresses: {
-          token_ids: response.tokens,
+          token_ids: response.token_list.tokens,
         },
       }
 
@@ -274,7 +294,7 @@ const NftIcaContextProvider = (props: Props): JSX.Element => {
 
     setStatus(Status.Loading)
 
-    gasLimit = gasLimit ?? 100_000
+    gasLimit = gasLimit ?? 500_000
 
     try {
       const resp = await secretjs?.tx.compute.executeContract(

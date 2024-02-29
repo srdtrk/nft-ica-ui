@@ -39,14 +39,6 @@ const Navbar = (): JSX.Element => {
               >
                 NFT ICA App
               </button>
-              <button
-                onClick={() => {
-                  navigateTo('/Console')
-                }}
-                className="font-bold py-2 px-4 rounded mx-1 border-solid border-2 border-black hover:border-gray-500 hover:bg-gray-200 hover:text-gray-500"
-              >
-                Console
-              </button>
             </div>
           ) : (
             <h2 className="font-semibold text-lg">Tokenized Interchain Accounts</h2>
