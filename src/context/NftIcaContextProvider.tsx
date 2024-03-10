@@ -18,9 +18,9 @@ import type {
 } from '@/contracts/NftIcaCoordinator.types'
 import type { TxResponse } from 'secretjs'
 
-const NFT_ICA_CONTRACT_ADDRESS = 'secret1ke9rs87nfu24vcqrdndvv4x9wpkmswc6kjs09s'
+const NFT_ICA_CONTRACT_ADDRESS = 'secret1m4c74ptw6k3tz5mp7k3jpqkgdcsg3k6ztcll3j'
 const NFT_ICA_CODE_HASH = '18033e8600ee524198184d8b8ffaa43dd23582a723b95ff545726af2f178c69a'
-const SNIP721_CONTRACT_ADDRESS = 'secret1nt8wfm6fcrahlz3h3x83gxvgmd734xxc9325g6'
+const SNIP721_CONTRACT_ADDRESS = 'secret1e62wz6q0ku9yg4q8e5gpwc2mt9tf4vzsdvms97'
 const SNIP721_CODE_HASH = '773c39a4b75d87c4d04b6cfe16d32cd5136271447e231b342f7467177c363ca8'
 
 enum Status {
