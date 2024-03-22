@@ -41,11 +41,11 @@ SUCCESS Connection {
             runtime_sender: Sender { .. },
         },
         client_id: ClientId(
-            "07-tendermint-235",
+            "07-tendermint-238",
         ),
         connection_id: Some(
             ConnectionId(
-                "connection-217",
+                "connection-219",
             ),
         ),
     },
@@ -58,11 +58,11 @@ SUCCESS Connection {
             runtime_sender: Sender { .. },
         },
         client_id: ClientId(
-            "07-tendermint-3216",
+            "07-tendermint-3454",
         ),
         connection_id: Some(
             ConnectionId(
-                "connection-3391",
+                "connection-3570",
             ),
         ),
     },
